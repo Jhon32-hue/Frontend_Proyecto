@@ -1,0 +1,80 @@
+.bg-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #e0e7ff, #f5f7ff);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.8s ease;
+}
+
+@keyframes fade-in-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 0.6s ease-out both;
+}
+
+.bg-wrapper.dark {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+}
+
+/* Base burbuja */
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  animation: floatMove 6s ease-in-out infinite alternate;
+}
+
+/* Tamaños */
+.bubble-big {
+  width: 500px;
+  height: 500px;
+  filter: blur(80px);
+  opacity: 0.2;
+}
+
+.bubble-tiny {
+  width: 120px;
+  height: 120px;
+  filter: blur(40px);
+  opacity: 0.2;
+}
+
+/* Posiciones */
+.bubble-1 { top: -100px; left: -100px; }
+.bubble-2 { bottom: -80px; right: -80px; }
+.bubble-3 { top: 20%; left: 60%; }
+.bubble-4 { top: 65%; left: 10%; }
+.bubble-5 { bottom: 20%; right: 15%; }
+.bubble-6 { top: 35%; right: 25%; }
+
+/* Animación de movimiento suave */
+@keyframes floatMove {
+  0%   { transform: translate(0, 0) scale(1); }
+  25%  { transform: translate(30px, -40px) scale(1.05); }
+  50%  { transform: translate(-40px, 30px) scale(1.08); }
+  75%  { transform: translate(25px, 40px) scale(1.04); }
+  100% { transform: translate(-30px, -30px) scale(1); }
+}
+
+/* Modo oscuro ajusta opacidad */
+.bg-wrapper.dark .bubble {
+  opacity: 0.45;
+
+
+
+
+  
+}

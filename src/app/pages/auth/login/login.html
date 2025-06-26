@@ -1,5 +1,5 @@
 <div class="bg-wrapper min-h-screen flex items-center justify-center" [ngClass]="darkMode ? 'dark' : ''">
-  <!-- 🌌 Burbujeo decorativo (opcional: mantengo tus divs) -->
+  <!-- 🌌 Burbujeo decorativo -->
   <div class="bubble bubble-big bubble-1 bg-gradient-to-tr from-indigo-300 via-purple-400 to-blue-500"></div>
   <div class="bubble bubble-big bubble-2 bg-gradient-to-tr from-pink-400 via-fuchsia-500 to-purple-500"></div>
   <div class="bubble bubble-tiny bubble-3 bg-gradient-to-tr from-cyan-300 via-sky-400 to-indigo-400"></div>
@@ -16,14 +16,13 @@
     <span>{{ darkMode ? '☀️' : '🌙' }}</span>
   </button>
 
-  <!-- 🧾 Tarjeta principal -->
-  <div class="relative z-10 flex w-full max-w-6xl rounded-3xl overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
-    <!-- 🖼️ Lado ilustración -->
-    <div class="hidden lg:flex lg:w-1/2 bg-blue-500 dark:bg-blue-700 items-center justify-center p-8">
-      <div class="text-center">
-        <!-- 🔼 MOVIDO ARRIBA -->
-        <h2 class="mb-4 text-white text-2xl font-extrabold text-center drop-shadow-[2px_2px_4px_rgba(0,0,0,0.8)]">Agilidad real para equipos reales</h2>
+  <!-- 📜 Tarjeta principal -->
+  <div class="relative z-10 flex flex-col lg:flex-row w-full max-w-6xl mx-4 sm:mx-6 md:mx-10 rounded-3xl overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
 
+    <!-- 🖼️ Lado ilustración -->
+    <div class="hidden lg:flex lg:w-1/2 bg-blue-500 items-center justify-center p-8">
+      <div class="text-center">
+        <h2 class="mb-4 text-white text-2xl font-extrabold text-center drop-shadow-[2px_2px_4px_rgba(0,0,0,0.8)]">Agilidad real para equipos reales</h2>
         <img
           src="https://cdni.iconscout.com/illustration/premium/thumb/login-4482745-3723271.png"
           alt="Ilustración login"
@@ -35,51 +34,61 @@
       </div>
     </div>
 
-  
     <!-- 👉 Formulario -->
-  <div class="relative w-full lg:w-1/2 bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 px-8 sm:px-12 py-10 flex flex-col justify-center shadow-2xl rounded-br-3xl">
-    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">¡Bienvenido de nuevo!</h1>
-    <p class="text-sm text-gray-500 dark:text-gray-400 mb-8">Ingresa tus credenciales para continuar</p>
+    <div class="relative w-full lg:w-1/2 bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 px-6 sm:px-12 py-10 flex flex-col justify-center shadow-2xl rounded-br-3xl animate-fade-in-down">
+      <app-logo-taskly class="absolute top-4 right-6 lg:right-8 z-20"></app-logo-taskly>
 
-    <form class="space-y-5" (ngSubmit)="onLogin()">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">¡Bienvenido de nuevo!</h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400  p-2">
+      Ingresa tus credenciales para continuar</p>
 
-      <!-- 📧 Campo correo -->
-      <div class="relative">
-        <input
-          type="email"
-          [(ngModel)]="email"
-          name="email"
-          required
-          placeholder="Correo electrónico"
-          class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 transition"
-        />
-        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 4.5h-9A2.25 2.25 0 005.25 6.75v10.5A2.25 2.25 0 007.5 19.5h9a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0016.5 4.5z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.75 6.75l7.125 5.25L20.25 6.75" />
-          </svg>
-
-        </span>
+      <!-- 🚩 Mensaje de error -->
+      <div *ngIf="errorMessage" class="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm bg-red-100 dark:bg-red-800/30 border border-red-300 dark:border-red-600 px-4 py-3 rounded-lg shadow-sm animate-pulse transition-all duration-300">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.054 0 1.702-1.14 1.197-2.01L13.197 4.99a1.25 1.25 0 00-2.394 0L3.885 16.99c-.505.87.143 2.01 1.197 2.01z" />
+        </svg>
+        <span class="flex-1 break-words">{{ errorMessage }}</span>
       </div>
 
-      <!-- 🔒 Campo contraseña -->
-      <div class="relative">
-        <input
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          required
-          placeholder="Contraseña"
-          class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 transition"
-        />
-        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12V9a4 4 0 00-8 0v3m-2 0h12a2 2 0 012 2v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5a2 2 0 012-2z" />
-          </svg>
+      <form class="space-y-5" (ngSubmit)="onLogin()">
 
-        </span>
-      </div>
+        <!-- 📧 Campo correo -->
+        <div class="relative">
+          <input
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            required
+            placeholder="Correo electrónico"
+            class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white/90 dark:bg-gray-700/90 text-sm placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 shadow-md hover:shadow-lg focus:shadow-2xl transition"
+          />
+          <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 4.5h-9A2.25 2.25 0 005.25 6.75v10.5A2.25 2.25 0 007.5 19.5h9a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0016.5 4.5z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.75 6.75l7.125 5.25L20.25 6.75" />
+            </svg>
+          </span>
+        </div>
 
+        <!-- 🔒 Campo contraseña -->
+        <div class="relative">
+          <input
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            required
+            placeholder="Contraseña"
+            class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white/90 dark:bg-gray-700/90 text-sm placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 shadow-md hover:shadow-lg focus:shadow-2xl transition"
+          />
+          <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12V9a4 4 0 00-8 0v3m-2 0h12a2 2 0 012 2v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5a2 2 0 012-2z" />
+            </svg>
+          </span>
+        </div>
+
+        <!-- Recordarme y olvidé -->
         <div class="flex justify-between text-xs text-indigo-600 dark:text-indigo-400">
           <label class="inline-flex items-center gap-2 cursor-pointer">
             <input type="checkbox" class="form-checkbox accent-indigo-600" />
@@ -88,6 +97,7 @@
           <a href="#" class="hover:underline">Olvidaste tu contraseña?</a>
         </div>
 
+        <!-- Botón iniciar sesión -->
         <button
           type="submit"
           class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
@@ -102,6 +112,7 @@
           <hr class="flex-1 border-gray-300 dark:border-gray-600" />
         </div>
 
+        <!-- Botón Google -->
         <button
           type="button"
           class="w-full flex items-center justify-center gap-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 text-sm font-medium"
@@ -110,11 +121,11 @@
           Iniciar sesión con Google
         </button>
 
-
         <p class="text-center text-sm mt-6">
           ¿No tienes cuenta?
-          <a href="#" class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Regístrate</a>
+          <a routerLink="/register" class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Regístrate</a>
         </p>
+
       </form>
     </div>
   </div>

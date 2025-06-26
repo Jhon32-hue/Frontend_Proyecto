@@ -1,14 +1,16 @@
 import { Component, Renderer2 } from '@angular/core'; 
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Auth } from '../../../interfaces/auth';
 import { AuthServices } from '../../../services/Auth/auth';
+import { LogoTaskly } from '../../../component/logo-taskly/logo-taskly';
+
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LogoTaskly, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -36,11 +38,13 @@ export class Login {
 
     if (!this.email.trim() || !this.password.trim()) {
       this.errorMessage = 'Por favor valida los datos ingresados';
+      setTimeout(() => this.errorMessage = '', 5000);
       return;
     }
 
     if (!emailRegex.test(this.email)) {
       this.errorMessage = 'Formato de correo no válido';
+      setTimeout(() => this.errorMessage = '', 5000);
       return;
     }
 
@@ -48,7 +52,6 @@ export class Login {
       next: (res: any) => {
         console.log('Respuesta del backend:', res);
 
-        // Adaptar manualmente el JSON para cumplir la interfaz `Auth`
         const adaptedResponse: Auth = {
           refresh: res.refresh,
           access: res.access,
@@ -75,6 +78,7 @@ export class Login {
       error: (err) => {
         console.error('Error en login:', err);
         this.errorMessage = err?.error?.message || 'Ocurrió un error al iniciar sesión';
+        setTimeout(() => this.errorMessage = '', 5000);
       }
     });
   }
