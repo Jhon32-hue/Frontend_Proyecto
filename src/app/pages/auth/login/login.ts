@@ -1,11 +1,10 @@
-import { Component, Renderer2 } from '@angular/core'; 
+import { Component, Renderer2, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Auth } from '../../../interfaces/auth';
 import { AuthServices } from '../../../services/Auth/auth';
 import { LogoTaskly } from '../../../component/logo-taskly/logo-taskly';
-
 
 @Component({
   selector: 'app-login',
@@ -14,23 +13,42 @@ import { LogoTaskly } from '../../../component/logo-taskly/logo-taskly';
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class Login {
+export class Login implements OnInit {
   email: string = '';
   password: string = '';
   darkMode: boolean = false;
   errorMessage: string = '';
+  loading: boolean = false;
 
   constructor(
     private authServices: AuthServices,
     private router: Router,
     private renderer: Renderer2
-  ) {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-    this.setDarkMode(prefersDark.matches);
+  ) {}
 
-    prefersDark.addEventListener('change', (e) => {
-      this.setDarkMode(e.matches);
-    });
+  ngOnInit(): void {
+    const savedDark = localStorage.getItem('darkMode');
+    if (savedDark !== null) {
+      this.setDarkMode(savedDark === 'true');
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+      this.setDarkMode(prefersDark.matches);
+    }
+  }
+
+  toggleDarkMode() {
+    this.setDarkMode(!this.darkMode);
+    localStorage.setItem('darkMode', this.darkMode.toString());
+  }
+
+  private setDarkMode(enabled: boolean) {
+    this.darkMode = enabled;
+    const root = document.documentElement;
+    if (enabled) {
+      this.renderer.addClass(root, 'dark');
+    } else {
+      this.renderer.removeClass(root, 'dark');
+    }
   }
 
   onLogin() {
@@ -38,20 +56,20 @@ export class Login {
 
     if (!this.email.trim() || !this.password.trim()) {
       this.errorMessage = 'Por favor valida los datos ingresados';
-      setTimeout(() => this.errorMessage = '', 5000);
+      this.resetError();
       return;
     }
 
     if (!emailRegex.test(this.email)) {
       this.errorMessage = 'Formato de correo no válido';
-      setTimeout(() => this.errorMessage = '', 5000);
+      this.resetError();
       return;
     }
 
+    this.loading = true;
+
     this.authServices.login(this.email, this.password).subscribe({
       next: (res: any) => {
-        console.log('Respuesta del backend:', res);
-
         const adaptedResponse: Auth = {
           refresh: res.refresh,
           access: res.access,
@@ -70,30 +88,27 @@ export class Login {
         localStorage.setItem('email', adaptedResponse.user.email);
 
         this.errorMessage = '';
+        this.loading = false;
 
         this.router.navigate(['/dashboard']).then(navigated => {
-        console.log('¿Redirigido?', navigated);
-      });
+          console.log('¿Redirigido?', navigated);
+        });
       },
       error: (err) => {
         console.error('Error en login:', err);
+        this.loading = false;
         this.errorMessage = err?.error?.message || 'Ocurrió un error al iniciar sesión';
-        setTimeout(() => this.errorMessage = '', 5000);
+        this.resetError();
       }
     });
   }
 
-  toggleDarkMode() {
-    this.setDarkMode(!this.darkMode);
+  loginWithGoogle() {
+    console.log('Iniciar sesión con Google...');
+    // Aquí se integra el Firebase Auth o backend (OAuth2) para Google
   }
 
-  private setDarkMode(enabled: boolean) {
-    this.darkMode = enabled;
-    const root = document.documentElement;
-    if (enabled) {
-      this.renderer.addClass(root, 'dark');
-    } else {
-      this.renderer.removeClass(root, 'dark');
-    }
+  private resetError() {
+    setTimeout(() => this.errorMessage = '', 5000);
   }
 }
