@@ -1,0 +1,23 @@
+<div class="bg-white dark:bg-gray-900 shadow-md rounded-2xl p-6 h-full">
+  <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">📁 Proyectos activos</h2>
+
+  <div *ngIf="proyectos.length === 0" class="text-gray-400 italic">
+    No hay proyectos activos.
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div *ngFor="let proyecto of proyectos" class="border border-gray-200 rounded-xl p-4">
+      <h3 class="font-medium text-gray-900">{{ proyecto.nombre }}</h3>
+      <p class="text-sm text-gray-500 mb-2">{{ proyecto.descripcion }}</p>
+      <span
+        class="inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded"
+        [ngClass]="{
+          'bg-green-100 text-green-700': proyecto.estado_proyecto,
+          'bg-red-100 text-red-600': !proyecto.estado_proyecto
+        }"
+      >
+        {{ proyecto.estado_proyecto ? 'Activo' : 'Cerrado' }}
+      </span>
+    </div>
+  </div>
+</div>

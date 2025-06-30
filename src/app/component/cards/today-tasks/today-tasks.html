@@ -1,0 +1,19 @@
+<div class="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-6 transition duration-300 hover:shadow-lg animate-fade-in">
+  <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+    🗓️ Tareas de hoy
+  </h2>
+
+  <div *ngIf="loading" class="text-gray-500 dark:text-gray-400 text-sm">Cargando tareas...</div>
+
+  <ul *ngIf="!loading && tareas.length > 0" class="space-y-3">
+    <li *ngFor="let tarea of tareas" class="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+      <span class="text-blue-500 text-lg mt-1">•</span>
+      <div>
+        <p class="font-medium text-gray-800 dark:text-white">{{ tarea.titulo }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ tarea.descripcion }}</p>
+      </div>
+    </li>
+  </ul>
+
+  <p *ngIf="!loading && tareas.length === 0" class="text-gray-500 dark:text-gray-400 text-sm">No tienes tareas asignadas para hoy ✅</p>
+</div>

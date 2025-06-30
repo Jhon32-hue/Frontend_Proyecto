@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Auth } from '../../../interfaces/auth';
 import { AuthServices } from '../../../services/Auth/auth';
 import { LogoTaskly } from '../../../component/logo-taskly/logo-taskly';
+import { HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -77,7 +78,8 @@ export class Login implements OnInit {
             user_id: res.user_id,
             email: res.email,
             nombre_completo: res.nombre_completo
-          }
+          },
+
         };
 
         localStorage.setItem('refreshToken', adaptedResponse.refresh);

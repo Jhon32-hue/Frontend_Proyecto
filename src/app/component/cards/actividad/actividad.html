@@ -1,0 +1,123 @@
+<!-- CARD - Actividad Reciente -->
+<div class="rounded-2xl bg-gray-50 dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300 animate-fade-in">
+
+  <!-- Encabezado -->
+  <div class="flex items-center justify-between mb-5 border-b border-gray-100 dark:border-gray-700 pb-4">
+    <div class="flex items-center gap-2">
+      <div class="bg-sky-100 dark:bg-sky-800 text-sky-600 dark:text-white p-2 rounded-lg shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M3 4h18M3 10h18M3 16h18" />
+        </svg>
+      </div>
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Actividad reciente</h2>
+    </div>
+    <span *ngIf="loading" class="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
+  </div>
+
+  <!-- Lista horizontal de tarjetas -->
+  <div *ngIf="!loading && actividades.length"
+       class="flex overflow-x-auto gap-4 pb-2 custom-scrollbar snap-x snap-mandatory">
+    <div *ngFor="let a of actividades.slice(0, 10)"
+         (click)="abrirModal(a)"
+         class="snap-start flex-shrink-0 w-60 p-4 rounded-xl bg-white dark:bg-gray-800
+                border border-gray-200 dark:border-gray-700 shadow hover:shadow-lg
+                hover:ring-1 hover:ring-sky-300 dark:hover:ring-sky-600
+                transition-all duration-200 cursor-pointer hover:scale-[1.015]">
+
+      <!-- Header de tarjeta -->
+      <div class="flex justify-between items-start mb-2">
+        <p class="text-sm font-semibold text-gray-800 dark:text-white truncate">
+          {{ a.nombre_proyecto }}
+        </p>
+        <div
+          class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs shadow-sm"
+          [ngClass]="{
+            'bg-emerald-500': tipoAccion(a.accion_realizada) === 'crear',
+            'bg-amber-500': tipoAccion(a.accion_realizada) === 'editar',
+            'bg-rose-500': tipoAccion(a.accion_realizada) === 'eliminar',
+            'bg-sky-500': tipoAccion(a.accion_realizada) === 'otro'
+          }"
+        >
+          <svg *ngIf="tipoAccion(a.accion_realizada) === 'crear'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+          <svg *ngIf="tipoAccion(a.accion_realizada) === 'editar'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24"><path d="M16.5 3.5l4 4L7 21l-4 1 1-4L16.5 3.5z" /></svg>
+          <svg *ngIf="tipoAccion(a.accion_realizada) === 'eliminar'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24"><path d="M3 6h18M8 6v14M16 6v14" /></svg>
+          <svg *ngIf="tipoAccion(a.accion_realizada) === 'otro'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 8v4l2 2" /></svg>
+        </div>
+      </div>
+
+      <!-- Separador -->
+      <div class="h-px bg-gray-200 dark:bg-gray-600 my-2 rounded"></div>
+
+      <!-- Acción -->
+      <p class="text-xs text-gray-600 dark:text-gray-300 truncate">
+        {{ a.accion_realizada }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Sin actividad -->
+  <p *ngIf="!loading && !actividades.length"
+     class="mt-4 text-sm text-center text-gray-500 dark:text-gray-400">
+    No hay actividad reciente.
+  </p>
+</div>
+
+<!-- MODAL - Detalle de actividad -->
+<div *ngIf="modalAbierto && actividadSel" class="fixed inset-0 z-50 flex items-center justify-center">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-md animate-fade-in" (click)="cerrarModal()"></div>
+
+  <div
+    class="relative w-[95%] sm:w-[600px] md:w-[720px] max-h-[90vh] overflow-y-auto
+           bg-white dark:bg-gray-900 text-gray-800 dark:text-white
+           rounded-2xl shadow-2xl p-6 animate-zoom-in ring-1 ring-gray-300 dark:ring-gray-700"
+    (click)="$event.stopPropagation()"
+  >
+    <button
+      class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl transition-colors"
+      (click)="cerrarModal()" aria-label="Cerrar">✕</button>
+
+    <div class="flex items-center gap-4 mb-6 border-b pb-4 border-gray-200 dark:border-gray-700">
+      <div
+        class="w-12 h-12 rounded-xl flex items-center justify-center shadow text-white"
+        [ngClass]="{
+          'bg-green-500': tipoAccion(actividadSel.accion_realizada) === 'crear',
+          'bg-yellow-500': tipoAccion(actividadSel.accion_realizada) === 'editar',
+          'bg-red-500': tipoAccion(actividadSel.accion_realizada) === 'eliminar',
+          'bg-indigo-500': tipoAccion(actividadSel.accion_realizada) === 'otro'
+        }"
+      >
+        <ng-container [ngSwitch]="tipoAccion(actividadSel.accion_realizada)">
+          <svg *ngSwitchCase="'crear'" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+          <svg *ngSwitchCase="'editar'" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24"><path d="M16.5 3.5l4 4L7 21l-4 1 1-4L16.5 3.5z" /></svg>
+          <svg *ngSwitchCase="'eliminar'" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24"><path d="M3 6h18M8 6v14M16 6v14M5 6L5 20M19 6L19 20"/></svg>
+          <svg *ngSwitchDefault class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 8v4l2 2" /></svg>
+        </ng-container>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold leading-tight">Detalle de actividad</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ actividadSel.fecha_hora | date:'fullDate' }}</p>
+      </div>
+    </div>
+
+    <table class="w-full text-sm table-auto border-separate border-spacing-y-2">
+      <tbody>
+        <tr><th class="text-left text-gray-500 dark:text-gray-400 w-1/3">Proyecto:</th><td>{{ actividadSel.nombre_proyecto }}</td></tr>
+        <tr><th class="text-left text-gray-500 dark:text-gray-400">Tarea:</th><td>{{ actividadSel.nombre_tarea }}</td></tr>
+        <tr><th class="text-left text-gray-500 dark:text-gray-400">Historia de usuario:</th><td>{{ actividadSel.nombre_hu }}</td></tr>
+        <tr><th class="text-left text-gray-500 dark:text-gray-400">Acción:</th><td>{{ actividadSel.accion_realizada }}</td></tr>
+        <tr><th class="text-left text-gray-500 dark:text-gray-400">Rol:</th><td>{{ actividadSel.rol_participacio }}</td></tr>
+        <tr><th class="text-left text-gray-500 dark:text-gray-400">Usuario:</th><td>{{ actividadSel.usuario }}</td></tr>
+        <tr><th class="text-left text-gray-500 dark:text-gray-400">Fecha:</th><td>{{ actividadSel.fecha_hora | date:'medium' }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,7 +1,42 @@
-<!-- Sidebar fijo -->
-<app-sidebar></app-sidebar>
+<div class="flex min-h-screen bg-gradient-to-br from-gray-100 to-white dark:from-gray-900 dark:to-gray-800">
+  <!-- Sidebar -->
+  <app-sidebar
+    [ngClass]="isSidebarOpen ? 'w-64' : 'w-20'"
+    class="transition-all duration-300 z-10 shrink-0"
+  ></app-sidebar>
 
-<!-- Contenido principal -->
-<main class="ml-64 p-4">
+  <!-- Main Content -->
+  <main
+    class="flex-1 p-6 sm:p-8 overflow-auto space-y-12 transition-all duration-300 ease-in-out"
+  >
+    <!-- Header -->
+    <header>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+          <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Hola, {{ nombreCompleto }}
+      </h1>
+      <p class="text-md text-gray-500 dark:text-gray-300 mt-1">
+        Aquí tienes un resumen de tu trabajo hoy
+      </p>
+    </header>
 
-</main>
+    <!-- 🧠 Actividad reciente -->
+    <section>
+      <app-actividad></app-actividad>
+    </section>
+
+    <!-- 📋 Tareas y Proyectos -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <app-today-tasks></app-today-tasks>
+      <app-proyectos></app-proyectos>
+    </section>
+    
+     <!-- 📅 Calendario debajo -->
+    <section>
+        <app-calendar-panel></app-calendar-panel>
+    </section>
+  </main>
+</div>
