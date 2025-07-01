@@ -3,9 +3,7 @@ import { Auth } from '../../interfaces/auth';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Register, RegisterRequest } from '../../interfaces/auth';
-
-//Los servicios implementan los objetos mapeados en las interfaces,
-//con la particularidad de que reciben los parametros de la petición
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +11,10 @@ import { Register, RegisterRequest } from '../../interfaces/auth';
 export class AuthServices {
   private apiUrl: string = 'http://127.0.0.1:8000/api/usuarios/';
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly router: Router
+  ) {}
 
   login(emailFromParameter: string, passwordFromParameter: string): Observable<Auth> {
     const url = this.apiUrl + 'token/';
@@ -25,5 +26,22 @@ export class AuthServices {
     const url = this.apiUrl + 'registro/';
     return this.http.post<Register>(url, data);
   }
-}
 
+  logout(): void {
+    localStorage.removeItem('accessToken');
+    this.router.navigate(['']);
+  }
+
+  isAuthenticated(): boolean {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return false;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp;
+      return Date.now() < exp * 1000;
+    } catch {
+      return false;
+    }
+  }
+}

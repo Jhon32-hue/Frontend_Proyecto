@@ -2,14 +2,16 @@
   <!-- Sidebar -->
   <app-sidebar
     [ngClass]="isSidebarOpen ? 'w-64' : 'w-20'"
-    class="transition-all duration-300 z-10 shrink-0"
+    class="transition-all duration-300 z-20 shrink-0"
   ></app-sidebar>
 
-  <!-- Main Content -->
+  <!-- Header fijo -->
+  <app-header class="fixed top-0 left-0 w-full z-10"></app-header>
+
+  <!-- Main ajustado con margen superior -->
   <main
-    class="flex-1 p-6 sm:p-8 overflow-auto space-y-12 transition-all duration-300 ease-in-out"
+    class="flex-1 mt-16 p-6 sm:p-8 overflow-auto space-y-12 transition-all duration-300 ease-in-out"
   >
-    <!-- Header -->
     <header>
       <h1 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
         <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2"
@@ -33,10 +35,10 @@
       <app-today-tasks></app-today-tasks>
       <app-proyectos></app-proyectos>
     </section>
-    
-     <!-- 📅 Calendario debajo -->
+
+    <!-- 📅 Calendario -->
     <section>
-        <app-calendar-panel></app-calendar-panel>
+      <app-calendar-panel></app-calendar-panel>
     </section>
   </main>
 </div>

@@ -5,6 +5,7 @@ import { TodayTasksComponent } from '../../../component/cards/today-tasks/today-
 import { ResumenProyectosComponent } from '../../../component/cards/proyectos/proyectos';
 import { ActividadUsuarioComponent } from '../../../component/cards/actividad/actividad';
 import { CalendarPanel } from '../../../component/calendar-panel/calendar-panel';
+import { Header } from '../../../component/header/header';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,7 +16,8 @@ import { CalendarPanel } from '../../../component/calendar-panel/calendar-panel'
     TodayTasksComponent,
     ResumenProyectosComponent,
     ActividadUsuarioComponent,
-    CalendarPanel
+    CalendarPanel,
+    Header
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
