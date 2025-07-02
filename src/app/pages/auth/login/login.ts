@@ -6,11 +6,12 @@ import { Auth } from '../../../interfaces/auth';
 import { AuthServices } from '../../../services/Auth/auth';
 import { LogoTaskly } from '../../../component/logo-taskly/logo-taskly';
 import { HttpHeaders } from '@angular/common/http';
+import { LogoCentro } from '../../../component/logo-centro/logo-centro';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, LogoTaskly, RouterModule],
+  imports: [LogoCentro, CommonModule, FormsModule, LogoTaskly, RouterModule,],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })

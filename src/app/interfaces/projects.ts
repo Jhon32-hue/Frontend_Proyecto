@@ -1,5 +1,5 @@
-export interface ProjectsCreate {
+export interface ProjectCreate {
     nombre: string;
     descripcion: string;
-    estado_proyecto: boolean;
+    estado_proyecto: string;
 }

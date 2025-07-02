@@ -19,4 +19,10 @@ export class ProjectService {
     const url = this.apiUrl + 'gestion/';
     return this.http.post<ProjectCreate>(url, data);
   }
+
+  deleteProject(id: number): Observable<any> {
+  const url = `${this.apiUrl}gestion/${id}/`;
+  return this.http.delete(url);
+}
+
 }

@@ -1,4 +1,11 @@
-<div class="bg-wrapper min-h-screen flex items-center justify-center px-4 md:px-8 xl:px-24 2xl:px-32 transition-all" [ngClass]="darkMode ? 'dark' : ''">  <!-- 🌌 Burbujas decorativas -->
+<div class="bg-wrapper min-h-screen flex items-center justify-center px-4 md:px-8 xl:px-24 2xl:px-32 transition-all" [ngClass]="darkMode ? 'dark' : ''">  
+
+  <!-- 🔝 Logo Taskly flotante arriba a la izquierda -->
+  <div class="fixed top-4 left-4 z-40">
+    <app-logo-centro></app-logo-centro>
+  </div>
+
+  <!-- 🌌 Burbujas decorativas -->
   <div class="bubble bubble-big bubble-1 bg-gradient-to-tr from-indigo-300 via-purple-400 to-blue-500"></div>
   <div class="bubble bubble-big bubble-2 bg-gradient-to-tr from-pink-400 via-fuchsia-500 to-purple-500"></div>
   <div class="bubble bubble-tiny bubble-3 bg-gradient-to-tr from-cyan-300 via-sky-400 to-indigo-400"></div>

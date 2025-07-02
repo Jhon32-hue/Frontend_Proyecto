@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthServices } from '../../services/Auth/auth';
-import { ProjectService } from '../../services/Projects/project';
+import { Sincronizacion } from '../../services/sincronizacion';
+import { Subscription } from 'rxjs';
+
+type EstadoUsuario = 'online' | 'away' | 'offline';
 
 @Component({
   selector: 'app-header',
@@ -12,12 +15,14 @@ import { ProjectService } from '../../services/Projects/project';
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
-export class Header implements OnInit {
+export class Header implements OnInit, OnDestroy {
   constructor(
     private authService: AuthServices,
     private router: Router,
-    private projectService: ProjectService
+    private sincronizacionService: Sincronizacion
   ) {}
+
+  @Output() nuevoProyectoClick = new EventEmitter<void>();
 
   isDarkMode = false;
   searchFocused = false;
@@ -26,22 +31,21 @@ export class Header implements OnInit {
   showQuickActions = false;
   notificacionesSinLeer = true;
   showLogoutModal = false;
-  mostrarModalProyecto = false;
-  mensajeExitoProyecto = false;
+  estadoUsuario: EstadoUsuario = 'online';
+  private actividadTimeout: any;
+  private usuarioId = 0;
 
-  private usuarioId: number = 0;
-
-  nuevoProyecto = {
-    nombre: '',
-    descripcion: '',
-    estado_proyecto: 'activo'  // valor por defecto como string
-  };
+  private darkModeSub!: Subscription;
 
   quickActions = [
-    { label: 'Nuevo proyecto', icon: 'folder_open', action: () => this.abrirModalProyecto() },
+    { label: 'Nuevo proyecto', icon: 'folder_open', action: () => this.emitirNuevoProyecto() },
     { label: 'Nueva tarea', icon: 'task_alt', action: () => this.crearTarea() },
     { label: 'Invitar colaborador', icon: 'person_add', action: () => this.invitarColaborador() }
   ];
+
+  emitirNuevoProyecto() {
+    this.nuevoProyectoClick.emit();
+  }
 
   togglePanel(panel: 'quick' | 'notifications' | 'user') {
     this.showQuickActions = panel === 'quick' ? !this.showQuickActions : false;
@@ -50,49 +54,46 @@ export class Header implements OnInit {
   }
 
   toggleTheme() {
-    this.isDarkMode = !this.isDarkMode;
-    document.documentElement.classList.toggle('dark', this.isDarkMode);
-    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
+    const nuevoModo = !this.sincronizacionService.getDarkMode();
+    this.sincronizacionService.setDarkMode(nuevoModo, true); // ✅ con delay
+  }
+
+  estadoOpciones: EstadoUsuario[] = ['online', 'away', 'offline'];
+
+  cambiarEstado(estado: EstadoUsuario) {
+    this.estadoUsuario = estado;
+    localStorage.setItem('estadoUsuario', estado);
+
+    if (estado === 'offline') {
+      clearTimeout(this.actividadTimeout);
+    } else {
+      this.iniciarDeteccionInactividad();
+    }
+  }
+
+  private iniciarDeteccionInactividad() {
+    const resetInactividad = () => {
+      clearTimeout(this.actividadTimeout);
+
+      if (this.estadoUsuario !== 'offline') {
+        this.estadoUsuario = 'online';
+      }
+
+      this.actividadTimeout = setTimeout(() => {
+        if (this.estadoUsuario === 'online') {
+          this.estadoUsuario = 'away';
+        }
+      }, 60000);
+    };
+
+    window.addEventListener('mousemove', resetInactividad);
+    window.addEventListener('keydown', resetInactividad);
+
+    resetInactividad();
   }
 
   abrirSoporte() {
     console.log('Abrir soporte');
-  }
-
-  abrirModalProyecto() {
-    this.mostrarModalProyecto = true;
-    this.mensajeExitoProyecto = false;
-  }
-
-  cerrarModalProyecto() {
-    this.mostrarModalProyecto = false;
-    this.nuevoProyecto = {
-      nombre: '',
-      descripcion: '',
-      estado_proyecto: 'activo' // reinicia con valor por defecto
-    };
-    this.mensajeExitoProyecto = false;
-  }
-
-  enviarProyecto() {
-    const { nombre, descripcion, estado_proyecto } = this.nuevoProyecto;
-
-    if (!nombre || !descripcion) return;
-
-    this.projectService.createProject({
-      nombre,
-      descripcion,
-      estado_proyecto  // ya es string: 'activo' o 'inactivo'
-    }).subscribe({
-      next: (res) => {
-        console.log('✅ Proyecto creado con éxito:', res);
-        this.mensajeExitoProyecto = true;
-        setTimeout(() => this.cerrarModalProyecto(), 2000); // cierra modal tras 2s
-      },
-      error: (err) => {
-        console.error('❌ Error al crear proyecto:', err.error);
-      }
-    });
   }
 
   crearTarea() {
@@ -118,11 +119,24 @@ export class Header implements OnInit {
   }
 
   ngOnInit() {
-    this.isDarkMode = localStorage.getItem('theme') === 'dark';
-    if (this.isDarkMode) {
-      document.documentElement.classList.add('dark');
+    // 🔄 Suscribirse al modo oscuro del servicio
+    this.darkModeSub = this.sincronizacionService.darkMode$.subscribe((valor) => {
+      this.isDarkMode = valor;
+    });
+
+    // ⚡ Inicializar desde localStorage (pero emitir a todos también)
+    const temaGuardado = localStorage.getItem('theme');
+    this.sincronizacionService.setDarkMode(temaGuardado === 'dark');
+    
+    // Estado usuario
+    const estadoGuardado = localStorage.getItem('estadoUsuario') as EstadoUsuario | null;
+    if (estadoGuardado) this.estadoUsuario = estadoGuardado;
+
+    if (this.estadoUsuario !== 'offline') {
+      this.iniciarDeteccionInactividad();
     }
 
+    // Usuario ID desde token
     const token = localStorage.getItem('accessToken');
     if (token) {
       try {
@@ -132,5 +146,9 @@ export class Header implements OnInit {
         console.error('❌ Error al decodificar token JWT:', e);
       }
     }
+  }
+
+  ngOnDestroy() {
+    this.darkModeSub?.unsubscribe();
   }
 }

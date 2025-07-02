@@ -22,3 +22,39 @@
 .delay-300 { animation-delay: 0.3s; }
 .delay-400 { animation-delay: 0.4s; }
 .delay-500 { animation-delay: 0.5s; }
+
+/* Scroll moderno compatible sin plugin */
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(99, 102, 241, 0.3); /* indigo-500 */
+  border-radius: 9999px;
+  transition: background-color 0.3s ease;
+}
+
+.custom-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(99, 102, 241, 0.5);
+}
+
+/* Soporte para Firefox */
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+}
+.custom-scroll:hover {
+  scrollbar-color: rgba(99, 102, 241, 0.5) transparent;
+}
+
+/* Opcional: modo oscuro si usas [class.dark] en html */
+.dark .custom-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(129, 140, 248, 0.25); /* indigo-400 */
+}
+.dark .custom-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(129, 140, 248, 0.5);
+}

@@ -1,0 +1,53 @@
+/* 🎨 Gradiente animado de fondo */
+@keyframes animatedGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-bg {
+  background: linear-gradient(135deg, #f0f4ff, #ffe4f1, #fdfcff, #f0f9ff);
+  background-size: 300% 300%;
+  animation: animatedGradient 20s ease infinite;
+  mix-blend-mode: overlay;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* 🌑 Versión modo oscuro */
+.dark .animated-bg {
+  background: linear-gradient(135deg, #0e0f16, #1a1b23, #15161e, #12131a);
+  background-size: 300% 300%;
+  opacity: 0.08;
+  mix-blend-mode: normal;
+}
+
+/* 🌫️ Textura tipo ruido */
+.bg-noise {
+  background-image: url('/assets/textures/noise.png'); /* usa tu textura o pídele una base64 a ChatGPT */
+  background-repeat: repeat;
+  background-size: auto;
+  opacity: 0.06;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* Opcional si necesitas una animación para íconos u otros elementos */
+@keyframes bounceSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.bounce-slow {
+  animation: bounceSlow 2.5s ease-in-out infinite;
+}

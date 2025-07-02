@@ -1,19 +1,57 @@
-<div class="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-6 transition duration-300 hover:shadow-lg animate-fade-in">
-  <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-    🗓️ Tareas de hoy
+<div class="bg-white dark:bg-[#1e1f28] rounded-4xl border border-gray-200 dark:border-gray-700 shadow-md -mt-7 p-5">
+
+  <!-- Encabezado -->
+  <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-5 flex items-center gap-3">
+    <div class="bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-white p-2 rounded-full shadow">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 0 0 2-2V7H3v10a2 2 0 0 0 2 2z" />
+      </svg>
+    </div>
+    Tareas de hoy
   </h2>
 
-  <div *ngIf="loading" class="text-gray-500 dark:text-gray-400 text-sm">Cargando tareas...</div>
+  <!-- Cargando -->
+  <div *ngIf="loading" class="text-gray-500 dark:text-gray-400 text-sm italic">Cargando tareas...</div>
 
-  <ul *ngIf="!loading && tareas.length > 0" class="space-y-3">
-    <li *ngFor="let tarea of tareas" class="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-      <span class="text-blue-500 text-lg mt-1">•</span>
+  <!-- Lista de tareas -->
+  <ul *ngIf="!loading && tareas.length > 0" class="space-y-4">
+    <li *ngFor="let tarea of tareas"
+        class="relative flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md hover:shadow-lg hover:bg-white/60 dark:hover:bg-gray-700 transition duration-300 group">
+
+      <!-- Línea/acento lateral -->
+      <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-400 rounded-l-xl"></div>
+
+      <!-- Icono check -->
+      <button (click)="marcarComoCompletada(tarea)"
+              class="mt-1 text-green-500 hover:text-green-600 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M5 13l4 4L19 7" />
+        </svg>
+      </button>
+
+      <!-- Contenido -->
       <div>
-        <p class="font-medium text-gray-800 dark:text-white">{{ tarea.titulo }}</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ tarea.descripcion }}</p>
+        <p class="font-semibold text-gray-800 dark:text-white leading-tight">
+          {{ tarea.titulo }}
+        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-300">
+          {{ tarea.descripcion }}
+        </p>
       </div>
     </li>
   </ul>
 
-  <p *ngIf="!loading && tareas.length === 0" class="text-gray-500 dark:text-gray-400 text-sm">No tienes tareas asignadas para hoy ✅</p>
+  <!-- Sin tareas -->
+  <p *ngIf="!loading && tareas.length === 0"
+     class="text-gray-500 dark:text-gray-400 text-sm italic mt-2">
+    No tienes tareas asignadas para hoy ✅
+  </p>
+
+  <!-- Botón ver todas -->
+  <div *ngIf="!loading" class="pt-5 text-right">
+    <button (click)="verTodasTareas()"
+            class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 dark:hover:text-blue-300 transition">
+      Ver todas →
+    </button>
+  </div>
 </div>

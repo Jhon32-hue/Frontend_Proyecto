@@ -1,41 +1,45 @@
-<div class="w-full bg-white dark:bg-gray-900 border rounded-2xl shadow-lg p-6 space-y-8 transition-all duration-300">
+<div
+  class="relative p-6 rounded-4xl bg-white
+         border border-neutral-300 shadow-xl shadow-black/10 ring-1 ring-inset ring-white/50
+         backdrop-blur-sm space-y-8 -mt-7"
+>
 
-  <!-- 🔔 Alerta de conexión -->
-  <div class="bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-200 p-5 rounded-xl text-sm flex flex-col lg:flex-row justify-between gap-4 items-start lg:items-center animate-fade-in">
+  <!-- 🔔 Alerta -->
+  <div class="bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-200 p-5 rounded-xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border border-rose-100 dark:border-rose-900 shadow-md">
     <div>
-      <p class="font-semibold mb-1 text-base">Tu calendario aún no está conectado</p>
-      <p>
+      <p class="text-base font-semibold mb-1">Tu calendario aún no está conectado</p>
+      <p class="text-sm leading-relaxed">
         Conecta tu disponibilidad para facilitar la programación de eventos.
         <a href="#" class="underline font-medium hover:text-rose-500 dark:hover:text-rose-300 transition">Más información</a>
       </p>
     </div>
-    <div class="flex gap-3">
-      <!-- Google -->
-      <button class="bg-white dark:bg-gray-800 border text-sm px-4 py-2 rounded-md shadow flex items-center gap-2 hover:scale-105 transition">
+    <div class="flex flex-wrap gap-3">
+      <button class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-sm px-4 py-2 rounded-lg shadow-sm flex items-center gap-2 hover:shadow-md hover:scale-[1.02] transition">
         <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4" alt="Google" />
         Google
       </button>
-      <!-- Outlook -->
-      <button class="bg-white dark:bg-gray-800 border text-sm px-4 py-2 rounded-md shadow flex items-center gap-2 hover:scale-105 transition">
-        <img src="https://www.svgrepo.com/download/443244/brand-microsoft-outlook.svg"
-            class="w-4 h-4"
-            alt="Outlook" />
+      <button class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-sm px-4 py-2 rounded-lg shadow-sm flex items-center gap-2 hover:shadow-md hover:scale-[1.02] transition">
+        <img src="https://www.svgrepo.com/download/443244/brand-microsoft-outlook.svg" class="w-4 h-4" alt="Outlook" />
         Outlook
       </button>
     </div>
   </div>
 
-  <!-- 📆 Contenido principal -->
+  <!-- 📆 Contenido -->
   <div class="flex flex-col lg:flex-row gap-6">
-    <!-- 🧭 Tabs + contenido -->
+
+    <!-- Tabs y contenido -->
     <div class="flex-1 space-y-6">
+
+      <!-- Tabs -->
       <div class="flex gap-6 border-b pb-2 text-sm font-medium text-gray-600 dark:text-gray-300">
-        <button class="border-b-2 border-purple-600 text-purple-600">Esta semana</button>
-        <button class="hover:text-purple-500 transition">Hoy</button>
-        <button class="hover:text-purple-500 transition">Eventos pasados</button>
+        <button class="border-b-2 border-purple-600 text-purple-600 dark:text-purple-400">Esta semana</button>
+        <button class="hover:text-purple-500 dark:hover:text-purple-300 transition">Hoy</button>
+        <button class="hover:text-purple-500 dark:hover:text-purple-300 transition">Eventos pasados</button>
       </div>
 
-      <div class="flex justify-between items-center text-sm text-gray-500">
+      <!-- Etiqueta derecha -->
+      <div class="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
         <div></div>
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -45,51 +49,56 @@
         </div>
       </div>
 
-      <!-- 🗓️ Sin eventos -->
+      <!-- Sin eventos -->
       <div class="flex flex-col items-center justify-center h-64 text-center animate-fade-in-up">
-        <img src="meeting.png" alt="No events" class="h-72 opacity-60 mb-2" />
-        <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">No hay eventos por ahora</p>
+        <img src="meeting.png" alt="No events" class="h-72 opacity-50 mb-4" />
+        <p class="text-sm font-medium text-gray-600 dark:text-gray-300">No hay eventos por ahora</p>
       </div>
     </div>
 
-    <!-- 🗓️ Calendario lateral -->
-    <div class="w-full lg:w-64 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm space-y-4 transition animate-fade-in">
-      <div class="flex justify-between items-center mb-2 text-sm font-medium text-gray-800 dark:text-gray-200">
-        <span class="capitalize">{{ month }}, {{ year }}</span>
+    <!-- 📅 Calendario lateral -->
+    <div class="w-full lg:w-64 border border-gray-200 dark:border-gray-700 rounded-2xl p-4 shadow-lg space-y-4 bg-white dark:bg-gray-800 transition animate-fade-in">
+
+      <!-- Mes -->
+      <div class="flex justify-between items-center text-sm font-medium text-gray-800 dark:text-gray-100">
+        <span class="capitalize tracking-wide">{{ month }}, {{ year }}</span>
         <div class="flex gap-2">
-          <button (click)="prevMonth()" class="hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded transition">&lt;</button>
-          <button (click)="nextMonth()" class="hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded transition">&gt;</button>
+          <button (click)="prevMonth()" class="hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded-full transition">&lt;</button>
+          <button (click)="nextMonth()" class="hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded-full transition">&gt;</button>
         </div>
       </div>
 
-      <div class="grid grid-cols-7 gap-1 text-xs text-center text-gray-500 dark:text-gray-400">
+      <!-- Días de la semana -->
+      <div class="grid grid-cols-7 gap-1 text-xs text-center text-gray-500 dark:text-gray-400 font-semibold uppercase">
         <div>Lu</div><div>Ma</div><div>Mi</div><div>Ju</div><div>Vi</div><div>Sa</div><div>Do</div>
       </div>
 
-      <div class="grid grid-cols-7 gap-1 text-sm text-center">
+      <!-- Días del mes -->
+      <div class="grid grid-cols-7 gap-1 text-sm text-center font-medium">
         <ng-container *ngFor="let day of [].constructor(daysInMonth); let i = index">
           <div
-            class="py-1 rounded-full cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-700 transition-all duration-200"
-            [ngClass]="{ 'bg-purple-600 text-white scale-105': selectedDay === i + 1 }"
+            class="py-1 rounded-full cursor-pointer transition-all duration-300 transform hover:scale-110 hover:bg-purple-100 dark:hover:bg-purple-700"
+            [ngClass]="{ 'bg-purple-600 text-white scale-110 shadow-md': selectedDay === i + 1 }"
             (click)="selectDay(i + 1)">
             {{ i + 1 }}
           </div>
         </ng-container>
       </div>
 
-      <!-- 📌 Botones -->
+      <!-- Acciones -->
       <div class="pt-4 space-y-2">
-        <button class="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md text-sm flex items-center justify-center gap-2 hover:scale-105 transition">
+        <button class="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md text-sm flex items-center justify-center gap-2 hover:shadow-md hover:scale-105 transition-all">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
                viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Ver calendario completo
         </button>
-        <button class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-medium flex items-center justify-center gap-2 hover:scale-105 transition">
+        <button class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-md">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
                viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" /></svg>
           Agendar evento
         </button>
       </div>
+
     </div>
   </div>
 </div>

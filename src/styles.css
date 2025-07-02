@@ -2,3 +2,7 @@
 @import "tailwindcss";
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Transición para todos los elementos de la UI */
+html, body, * {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}

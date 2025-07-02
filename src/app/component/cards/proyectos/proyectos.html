@@ -1,23 +1,53 @@
-<div class="bg-white dark:bg-gray-900 shadow-md rounded-2xl p-6 h-full">
-  <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">📁 Proyectos activos</h2>
+<!-- CONTENEDOR PRINCIPAL -->
+<div class="bg-white dark:bg-[#1e1f28] rounded-4xl border border-gray-200 dark:border-gray-700 shadow-md -mt-7 p-5">
+  <!-- Título + Ver Todos -->
+  <div class="flex justify-between items-center mb-5">
+    <h2 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-3">
+      <div class="bg-blue-100 dark:bg-indigo-800 text-blue-600 dark:text-white p-2 rounded-full shadow">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3 7v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7M16 3h-8m8 0a2 2 0 0 1 2 2v2H6V5a2 2 0 0 1 2-2m8 0H10" />
+        </svg>
+      </div>
+      Proyectos activos
+    </h2>
+    <button (click)="verTodosProyectos()"
+            class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 dark:hover:text-blue-300 transition">
+      Ver todos →
+    </button>
+  </div>
 
-  <div *ngIf="proyectos.length === 0" class="text-gray-400 italic">
+  <!-- Cargando -->
+  <div *ngIf="loading" class="text-gray-500 dark:text-gray-400 text-sm italic">Cargando proyectos...</div>
+
+  <!-- Sin proyectos -->
+  <div *ngIf="!loading && proyectos.length === 0" class="text-gray-400 italic">
     No hay proyectos activos.
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <div *ngFor="let proyecto of proyectos" class="border border-gray-200 rounded-xl p-4">
-      <h3 class="font-medium text-gray-900">{{ proyecto.nombre }}</h3>
-      <p class="text-sm text-gray-500 mb-2">{{ proyecto.descripcion }}</p>
-      <span
-        class="inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded"
-        [ngClass]="{
-          'bg-green-100 text-green-700': proyecto.estado_proyecto,
-          'bg-red-100 text-red-600': !proyecto.estado_proyecto
-        }"
-      >
+  <!-- Tarjetas -->
+  <div *ngIf="!loading && proyectos.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div *ngFor="let proyecto of proyectos | slice:0:6"
+         (click)="abrirModal(proyecto)"
+         class="relative cursor-pointer flex-shrink-0 p-5 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+                rounded-2xl shadow-md group hover:shadow-xl hover:scale-[1.03] active:scale-95
+                hover:ring-2 hover:ring-blue-400 dark:hover:ring-indigo-400 transition-all duration-300 overflow-hidden">
+      
+      <!-- Glow decorativo -->
+      <div class="absolute -inset-[1px] rounded-2xl pointer-events-none bg-gradient-to-br from-blue-100/40 to-transparent
+                  dark:from-indigo-500/20 dark:to-transparent blur-md opacity-60 group-hover:opacity-90 transition"></div>
+
+      <!-- Contenido -->
+      <h3 class="font-bold text-gray-800 dark:text-white text-base truncate mb-1 relative z-10">{{ proyecto.nombre }}</h3>
+      <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2 relative z-10">{{ proyecto.descripcion }}</p>
+      <span class="text-xs font-semibold px-2 py-1 rounded inline-block relative z-10"
+            [ngClass]="{
+              'bg-green-100 text-green-700': proyecto.estado_proyecto,
+              'bg-red-100 text-red-600': !proyecto.estado_proyecto
+            }">
         {{ proyecto.estado_proyecto ? 'Activo' : 'Cerrado' }}
       </span>
     </div>
   </div>
 </div>
+
+
