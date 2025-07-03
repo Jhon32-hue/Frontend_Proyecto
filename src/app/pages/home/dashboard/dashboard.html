@@ -1,132 +1,174 @@
-<div class="flex min-h-screen bg-[#f7f8fa] dark:bg-[#121318] text-gray-800 dark:text-white">
-  <!-- Sidebar -->
+<app-header
+   (crearProyecto)="abrirModalProyectoDesdeHeader()" [sidebarAbierto]="isSidebarOpen"
+  class="fixed top-0 left-0 h-16 w-full z-30 transition-all duration-300"
+></app-header>
+
+
+<!-- 🌐 LAYOUT GLOBAL -->
+<div class="flex bg-[#f9fafb] dark:bg-[#121318] min-h-screen">
+  
+  <!-- 🟪 SIDEBAR FIJO -->
   <app-sidebar
+    [ngClass]="isSidebarOpen ? 'w-56' : 'w-40'"
     (sidebarToggled)="isSidebarOpen = $event"
-    [ngClass]="isSidebarOpen ? 'w-64' : 'w-20'"
-    class="transition-all duration-300 z-20 shrink-0"
   ></app-sidebar>
 
-  <!-- Contenedor derecho -->
-  <div class="flex flex-col flex-1 transition-all duration-300 ease-in-out">
-    <!-- Header fijo -->
-    <app-header
-      class="fixed top-0 left-0 w-full z-10"
-      (nuevoProyectoClick)="abrirModalProyectoDesdeHeader()"
-    ></app-header>
+  <!-- 📦 CONTENEDOR DERECHO -->
+  <div
+    [ngClass]="isSidebarOpen ? 'ml-56' : 'ml-40'"
+    class="flex-1 flex flex-col transition-all duration-300 overflow-hidden"
+  >
+    <!-- 🔽 MAIN (con padding top para dejar espacio al header) -->
+    <main class="flex-1 pt-36 px-20 py-6 space-y-5 overflow-y-auto bg-[#f9fafb] dark:bg-[#121318] transition-colors">
+      <div class="w-full max-w-[95%] mx-auto space-y-12">
 
-  <!-- ✅ MODAL CREAR NUEVO PROYECTO CON BOTONES DE TEXTO EN LA ESQUINA -->
-  <div *ngIf="modalCrearProyecto" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 py-8">
-    <div
-      class="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 animate-fade-in-up"
-      [ngClass]="{ 'animate-shake': form?.submitted && form.invalid }"
-      (click)="$event.stopPropagation()"
-    >
-      <!-- ❌ Botón cerrar -->
-      <button class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl transition"
-              (click)="cerrarModalCrearProyecto()" aria-label="Cerrar">✕</button>
-
-      <!-- ✏️ Botones de texto -->
-      <div class="absolute top-6 right-28 flex gap-6">
-        <button type="button" class="text-sm font-medium text-yellow-700 hover:underline hover:text-yellow-800 transition" aria-label="Editar">
-          Editar
-        </button>
-        <button type="button" class="text-sm font-medium text-red-600 hover:underline hover:text-red-700 transition" aria-label="Eliminar">
-          Eliminar
-        </button>
-      </div>
-
-      <!-- ✔️ Éxito -->
-      <div *ngIf="mensajeExitoProyecto"
-          class="mx-6 mt-4 mb-1 flex items-center gap-2 bg-emerald-100 dark:bg-emerald-800/40 text-emerald-700 dark:text-emerald-200 rounded-md p-3 shadow-sm animate-fade-in">
-        <span class="material-icons text-base">check_circle</span>
-        <span>¡Proyecto creado con éxito!</span>
-      </div>
-
-      <!-- ❌ Error -->
-      <div *ngIf="mensajeErrorProyecto"
-          class="mx-6 mt-4 mb-1 flex items-center gap-2 bg-red-100 dark:bg-red-800/40 text-red-700 dark:text-red-200 rounded-md p-3 shadow-sm animate-fade-in">
-        <span class="material-icons text-base">error_outline</span>
-        <span>Ocurrió un error al crear el proyecto.</span>
-      </div>
-
-      <!-- 🧾 Título -->
-      <div class="px-6 pt-9 pb-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-start gap-2">
-        <span class="material-icons text-indigo-600 dark:text-indigo-400 text-xl -mt-4">add_circle</span>
-        <h2 class="text-lg font-bold text-gray-800 dark:text-white -mt-4">Crear nuevo proyecto</h2>
-      </div>
-
-      <!-- 📝 Formulario -->
-      <form #form="ngForm" (ngSubmit)="enviarProyecto()" class="px-6 pt-4 pb-6 space-y-4">
-
-        <!-- Nombre -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre del proyecto</label>
-          <input name="nombre" [(ngModel)]="nuevoProyecto.nombre" required #nombre="ngModel"
-                class="w-full px-4 py-2 rounded-md border bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-sm focus:outline-none focus:ring-2 transition"
-                [ngClass]="{
-                  'border-gray-300 dark:border-gray-600 focus:ring-indigo-500': !nombre.invalid || !nombre.touched,
-                  'border-red-500 ring-red-500 focus:ring-red-500': nombre.invalid && (nombre.touched || form.submitted)
-                }"/>
-          <p *ngIf="nombre.invalid && (nombre.touched || form.submitted)"
-            class="text-xs text-red-600 mt-1">El nombre es obligatorio.</p>
-        </div>
-
-        <!-- Descripción -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
-          <textarea name="descripcion" [(ngModel)]="nuevoProyecto.descripcion" required rows="4" #descripcion="ngModel"
-                    class="w-full px-4 py-2 rounded-md border bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-sm focus:outline-none focus:ring-2 transition"
-                    [ngClass]="{
-                      'border-gray-300 dark:border-gray-600 focus:ring-indigo-500': !descripcion.invalid || !descripcion.touched,
-                      'border-red-500 ring-red-500 focus:ring-red-500': descripcion.invalid && (descripcion.touched || form.submitted)
-                    }"></textarea>
-          <p *ngIf="descripcion.invalid && (descripcion.touched || form.submitted)"
-            class="text-xs text-red-600 mt-1">La descripción es obligatoria.</p>
-        </div>
-
-        <!-- Estado oculto -->
-        <input type="hidden" name="estado_proyecto" [(ngModel)]="nuevoProyecto.estado_proyecto" value="activo" />
-
-        <!-- Rol -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rol asignado</label>
-          <input type="text" value="Project Management Office (PMO)" readonly
-                class="w-full px-4 py-2 rounded-md border bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-not-allowed shadow-sm" />
-        </div>
-
-        <!-- Botones -->
-        <div class="flex justify-end gap-3 pt-2">
-          <button type="button" (click)="cerrarModalCrearProyecto()"
-                  class="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition shadow-sm">
-            Cancelar
-          </button>
-
-          <!-- ✅ BOTÓN CON SPINNER -->
-          <button type="submit"
-                  [disabled]="form.invalid || enviandoProyecto"
-                  class="px-4 py-2 rounded-md bg-indigo-600 text-white font-semibold flex items-center gap-2 hover:bg-indigo-700 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
-
-            <ng-container *ngIf="!enviandoProyecto; else cargando">
-              <span class="material-icons text-sm">check_circle</span>
-              Crear proyecto
-            </ng-container>
-
-            <ng-template #cargando>
-              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                        stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        <!-- 💬 Tarjeta de bienvenida -->
+        <section class="relative overflow-hidden flex flex-col sm:flex-row justify-between items-center gap-6 p-6 sm:p-8 rounded-3xl shadow-2xl bg-gradient-to-r from-indigo-100 via-blue-50 to-white dark:from-[#1e1f28] dark:via-[#1a1b23] dark:to-[#1a1b23] border border-gray-200 dark:border-white/10 ring-1 ring-white/30 dark:ring-white/5 transition-all animate-fade-in">
+          <div class="flex-1 space-y-2 z-10">
+            <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white leading-tight">
+              ¡Hola, {{ nombreCompleto || 'Usuario' }}!
+            </h2>
+            <p class="text-gray-600 dark:text-gray-300 text-base sm:text-lg max-w-md">
+              Obtén un resumen de tus actividades y mantente al tanto de tus proyectos.
+            </p>
+            <button class="mt-4 inline-flex items-center px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md transition">
+              Ver Actividades
+              <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
               </svg>
-              Enviando...
-            </ng-template>
+            </button>
+          </div>
+          <div class="absolute right-2 bottom-0 sm:right-6 sm:bottom-0 w-36 sm:w-52 md:w-60 z-0">
+            <img src="dasboard.png" alt="Welcome illustration" class="w-full h-auto drop-shadow-xl opacity-95 saturate-150 transition duration-300" />
+          </div>
+        </section>
 
-          </button>
-        </div>
-      </form>
-    </div>
+        <!-- 🔄 Actividad reciente -->
+        <section class="pt-4 border-t border-white/90 animate-fade-in">
+          <div class="transition-transform duration-300 hover:scale-[1.01]">
+            <app-actividad (actividadSeleccionada)="abrirModalDesdeDashboard($event)"></app-actividad>
+          </div>
+        </section>
+
+        <!-- 📌 Tareas y proyectos -->
+        <section class="pt-10 border-t border-white/10 animate-fade-in">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <app-today-tasks class="transition-transform duration-300 hover:scale-[1.01]"></app-today-tasks>
+            <app-proyectos (proyectoSeleccionado)="abrirModalDesdeProyectos($event)" class="transition-transform duration-300 hover:scale-[1.01]"></app-proyectos>
+          </div>
+        </section>
+
+        <!-- 🗓️ Calendario -->
+        <section class="pt-10 border-t border-white/10 animate-fade-in">
+          <app-calendar-panel class="transition-transform duration-300 hover:scale-[1.01]"></app-calendar-panel>
+        </section>
+
+      </div>
+    </main>
   </div>
+
+  <!-- ✅ MODAL CREAR NUEVO PROYECTO -->
+  <div *ngIf="modalCrearProyecto" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md px-4 py-8">
+  <div
+    class="relative w-full max-w-2xl bg-white dark:bg-gray-900/80 rounded-2xl border border-indigo-200 dark:border-indigo-700
+           shadow-[0_0_20px_rgba(99,102,241,0.6)] dark:shadow-[0_0_20px_rgba(129,140,248,0.5)]
+           backdrop-blur-lg animate-fade-in-up transition-all duration-300"
+    (click)="$event.stopPropagation()"
+    [ngClass]="{ 'animate-shake': form?.submitted && form.invalid }"
+  >
+    <!-- ❌ Botón cerrar -->
+    <button class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl transition" (click)="cerrarModalCrearProyecto()" aria-label="Cerrar">✕</button>
+
+    <!-- ✔️ Éxito -->
+    <div *ngIf="mensajeExitoProyecto"
+         class="mx-6 mt-4 mb-1 flex items-center gap-2 bg-emerald-100 dark:bg-emerald-800/40 text-emerald-700 dark:text-emerald-200 rounded-md p-3 shadow-sm animate-fade-in">
+      <span class="material-icons text-base">check_circle</span>
+      <span>¡Proyecto creado con éxito!</span>
+    </div>
+
+    <!-- ❌ Error -->
+    <div *ngIf="mensajeErrorProyecto"
+         class="mx-6 mt-4 mb-1 flex items-center gap-2 bg-red-100 dark:bg-red-800/40 text-red-700 dark:text-red-200 rounded-md p-3 shadow-sm animate-fade-in">
+      <span class="material-icons text-base">error_outline</span>
+      <span>Ocurrió un error al crear el proyecto.</span>
+    </div>
+
+    <!-- 🧾 Título -->
+    <div class="px-6 pt-9 pb-3 border-b border-indigo-100 dark:border-indigo-500/40 flex items-center justify-start gap-2">
+      <span class="material-icons text-indigo-600 dark:text-indigo-400 text-xl -mt-4">add_circle</span>
+      <h2 class="text-lg font-bold text-gray-800 dark:text-white -mt-4 tracking-wide">Crear nuevo proyecto</h2>
+    </div>
+
+    <!-- 📝 Formulario -->
+    <form #form="ngForm" (ngSubmit)="enviarProyecto()" class="px-6 pt-4 pb-6 space-y-4">
+
+      <!-- Nombre -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 tracking-wide mb-1">Nombre del proyecto</label>
+        <input name="nombre" [(ngModel)]="nuevoProyecto.nombre" required #nombre="ngModel"
+              class="w-full px-4 py-2 rounded-md border bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-white shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              [ngClass]="{
+                'border-gray-300 dark:border-gray-600': !nombre.invalid || !nombre.touched,
+                'border-red-500 ring-red-500': nombre.invalid && (nombre.touched || form.submitted)
+              }" />
+        <p *ngIf="nombre.invalid && (nombre.touched || form.submitted)" class="text-xs text-red-600 mt-1">El nombre es obligatorio.</p>
+      </div>
+
+      <!-- Descripción -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 tracking-wide mb-1">Descripción</label>
+        <textarea name="descripcion" [(ngModel)]="nuevoProyecto.descripcion" required rows="4" #descripcion="ngModel"
+                  class="w-full px-4 py-2 rounded-md border bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-white shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  [ngClass]="{
+                    'border-gray-300 dark:border-gray-600': !descripcion.invalid || !descripcion.touched,
+                    'border-red-500 ring-red-500': descripcion.invalid && (descripcion.touched || form.submitted)
+                  }"></textarea>
+        <p *ngIf="descripcion.invalid && (descripcion.touched || form.submitted)" class="text-xs text-red-600 mt-1">La descripción es obligatoria.</p>
+      </div>
+
+      <!-- Estado oculto -->
+      <input type="hidden" name="estado_proyecto" [(ngModel)]="nuevoProyecto.estado_proyecto" value="activo" />
+
+      <!-- Rol -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 tracking-wide mb-1">Rol asignado</label>
+        <input type="text" value="Project Management Office (PMO)" readonly
+              class="w-full px-4 py-2 rounded-md border bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-not-allowed shadow-sm" />
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-end gap-3 pt-2">
+        <button type="button" (click)="cerrarModalCrearProyecto()"
+                class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition shadow-md font-medium">
+          Cancelar
+        </button>
+
+        <!-- ✅ BOTÓN CON SPINNER -->
+        <button type="submit"
+                [disabled]="form.invalid || enviandoProyecto"
+                class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold flex items-center gap-2 hover:bg-indigo-700 hover:ring-2 hover:ring-indigo-400 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+
+          <ng-container *ngIf="!enviandoProyecto; else cargando">
+            <span class="material-icons text-sm">check_circle</span>
+            Crear proyecto
+          </ng-container>
+
+          <ng-template #cargando>
+            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            Enviando...
+          </ng-template>
+
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
 
 
     <!-- MODAL DE ACTIVIDAD -->
@@ -231,71 +273,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Main -->
-    <main class="mt-16 flex-1 overflow-auto bg-gray-80 dark:bg-[#121318] transition-all duration-300 ease-in-out px-6 py-10">
-      <div class="max-w-7xl mx-auto space-y-12 px-6 lg:px-8">
-
-        <!-- Tarjeta de bienvenida personalizada -->
-        <section
-          class="relative overflow-hidden flex flex-col sm:flex-row justify-between items-center gap-6 p-6 sm:p-8 rounded-3xl shadow-2xl
-                bg-gradient-to-r from-indigo-100
-                 via-indigo-80
-                  to-white dark:from-[#1e1f28] dark:via-[#1a1b23] dark:to-[#1a1b23]
-                border border-gray-200 dark:border-white/10 ring-1 ring-white/30 dark:ring-white/5
-                transition-all animate-fade-in"
-        >
-
-          <!-- Contenido textual -->
-          <div class="flex-1 space-y-2 z-10">
-            <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white leading-tight">
-              ¡Hola, {{ nombreCompleto || 'Usuario' }}!
-            </h2>
-            <p class="text-gray-600 dark:text-gray-300 text-base sm:text-lg max-w-md">
-              Obtén un resumen de tus actividades y mantente al tanto de tus proyectos.
-            </p>
-
-            <button
-              class="mt-4 inline-flex items-center px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md transition"
-            >
-              Ver Actividades
-              <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
-            </button>
-          </div>
-
-          <!-- Imagen decorativa -->
-          <div class="absolute right-2 bottom-0 sm:right-6 sm:bottom-0 w-36 sm:w-52 md:w-60 z-0">
-            <img src="dasboard.png" alt="Welcome illustration"
-              class="w-full h-auto drop-shadow-xl opacity-95 saturate-150 transition duration-300" />
-          </div>
-
-        </section>
-
-        <!-- Actividad reciente -->
-        <section class="pt-4 border-t border-white/90 animate-fade-in">
-          <div class="transition-transform duration-300 hover:scale-[1.01]">
-            <app-actividad (actividadSeleccionada)="abrirModalDesdeDashboard($event)"></app-actividad>
-          </div>
-        </section>
-
-        <!-- Tareas y Proyectos -->
-        <section class="pt-10 border-t border-white/10 animate-fade-in">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <app-today-tasks class="transition-transform duration-300 hover:scale-[1.01]"></app-today-tasks>
-            <app-proyectos
-              (proyectoSeleccionado)="abrirModalDesdeProyectos($event)"
-              class="transition-transform duration-300 hover:scale-[1.01]">
-            </app-proyectos>
-          </div>
-        </section>
-
-        <!-- Calendario -->
-        <section class="pt-10 border-t border-white/10 animate-fade-in">
-          <app-calendar-panel class="transition-transform duration-300 hover:scale-[1.01]"></app-calendar-panel>
-        </section>
-
-      </div>
-    </main>
-  </div>
 </div>
+
+    

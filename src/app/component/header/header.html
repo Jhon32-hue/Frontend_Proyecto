@@ -1,10 +1,11 @@
 <header
-  class="h-16 flex items-center justify-between px-6 sm:px-8 lg:px-10 z-10 transition-colors duration-500"
-  [ngClass]="isDarkMode 
-    ? 'bg-[#1a1b23] text-gray-100 border-b-2 border-white/40 shadow-sm' 
-    : 'bg-white text-gray-900 border-b border-gray-200 shadow-sm'"
+  [ngClass]="[
+    isDarkMode 
+      ? 'bg-[#0d0c22] text-gray-100 border-b-2 border-white/40 shadow-sm' 
+      : 'bg-white text-gray-900 border-b border-gray-200 shadow-sm'
+  ].join(' ')"
+  class="h-16 flex items-center justify-between px-6 sm:px-8 lg:px-10 z-10 transition-all duration-300"
 >
-
   <!-- 🔍 Buscador centrado -->
   <div class="flex-1 flex justify-center">
     <div class="relative transition-all duration-300 ease-in-out"
@@ -21,8 +22,7 @@
   </div>
 
   <!-- 📦 Botonería derecha -->
-  <div class="flex items-center gap-4 ml-6">
-
+  <div class="flex items-center gap-4 ml-4">
     <!-- ➕ Acciones rápidas -->
     <div class="relative group">
       <button (click)="togglePanel('quick')"

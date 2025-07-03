@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -22,7 +22,8 @@ export class Header implements OnInit, OnDestroy {
     private sincronizacionService: Sincronizacion
   ) {}
 
-  @Output() nuevoProyectoClick = new EventEmitter<void>();
+  @Input() sidebarAbierto: boolean = true;
+  @Output() crearProyecto = new EventEmitter<void>(); // 👈 evento para emitir al padre
 
   isDarkMode = false;
   searchFocused = false;
@@ -44,8 +45,9 @@ export class Header implements OnInit, OnDestroy {
   ];
 
   emitirNuevoProyecto() {
-    this.nuevoProyectoClick.emit();
+    this.crearProyecto.emit(); // ✅ Evento
   }
+
 
   togglePanel(panel: 'quick' | 'notifications' | 'user') {
     this.showQuickActions = panel === 'quick' ? !this.showQuickActions : false;
@@ -55,7 +57,7 @@ export class Header implements OnInit, OnDestroy {
 
   toggleTheme() {
     const nuevoModo = !this.sincronizacionService.getDarkMode();
-    this.sincronizacionService.setDarkMode(nuevoModo, true); // ✅ con delay
+    this.sincronizacionService.setDarkMode(nuevoModo, true);
   }
 
   estadoOpciones: EstadoUsuario[] = ['online', 'away', 'offline'];
@@ -74,11 +76,9 @@ export class Header implements OnInit, OnDestroy {
   private iniciarDeteccionInactividad() {
     const resetInactividad = () => {
       clearTimeout(this.actividadTimeout);
-
       if (this.estadoUsuario !== 'offline') {
         this.estadoUsuario = 'online';
       }
-
       this.actividadTimeout = setTimeout(() => {
         if (this.estadoUsuario === 'online') {
           this.estadoUsuario = 'away';
@@ -119,16 +119,13 @@ export class Header implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // 🔄 Suscribirse al modo oscuro del servicio
     this.darkModeSub = this.sincronizacionService.darkMode$.subscribe((valor) => {
       this.isDarkMode = valor;
     });
 
-    // ⚡ Inicializar desde localStorage (pero emitir a todos también)
     const temaGuardado = localStorage.getItem('theme');
     this.sincronizacionService.setDarkMode(temaGuardado === 'dark');
-    
-    // Estado usuario
+
     const estadoGuardado = localStorage.getItem('estadoUsuario') as EstadoUsuario | null;
     if (estadoGuardado) this.estadoUsuario = estadoGuardado;
 
@@ -136,7 +133,6 @@ export class Header implements OnInit, OnDestroy {
       this.iniciarDeteccionInactividad();
     }
 
-    // Usuario ID desde token
     const token = localStorage.getItem('accessToken');
     if (token) {
       try {

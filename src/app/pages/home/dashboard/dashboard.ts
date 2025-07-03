@@ -33,23 +33,18 @@ export class Dashboard implements OnInit {
   isSidebarOpen = true;
   nombreCompleto: string = 'Usuario';
 
-  // Estado del modal actividad
   modalAbierto = false;
   actividadSel: ActividadUsuario | null = null;
 
-  // Estado del modal proyecto (detalle)
   proyectoSel: ProyectoResumen | null = null;
   modalProyectoAbierto = false;
 
-  // Estado del modal crear nuevo proyecto
   modalCrearProyecto = false;
   mensajeExitoProyecto = false;
   mensajeErrorProyecto = false;
 
-  // 🚀 Indicador de envío activo
   enviandoProyecto = false;
 
-  // Datos del formulario de nuevo proyecto
   nuevoProyecto: ProjectCreate = {
     nombre: '',
     descripcion: '',
@@ -68,12 +63,10 @@ export class Dashboard implements OnInit {
     }
   }
 
-  // Sidebar toggle
   onSidebarToggle(open: boolean) {
     this.isSidebarOpen = open;
   }
 
-  // Actividad modal
   abrirModalDesdeDashboard(actividad: ActividadUsuario) {
     this.actividadSel = actividad;
     this.modalAbierto = true;
@@ -83,7 +76,6 @@ export class Dashboard implements OnInit {
     this.modalAbierto = false;
   }
 
-  // Proyecto detalle modal
   abrirModalDesdeProyectos(proyecto: ProyectoResumen) {
     this.proyectoSel = proyecto;
     this.modalProyectoAbierto = true;
@@ -94,7 +86,6 @@ export class Dashboard implements OnInit {
     this.proyectoSel = null;
   }
 
-  // Crear proyecto: modal desde header
   abrirModalProyectoDesdeHeader() {
     this.modalCrearProyecto = true;
   }
@@ -109,15 +100,16 @@ export class Dashboard implements OnInit {
     this.enviandoProyecto = false;
   }
 
-  // ✅ Envío real del formulario de creación de proyecto
   enviarProyecto() {
     this.enviandoProyecto = true;
+    this.mensajeExitoProyecto = false;
+    this.mensajeErrorProyecto = false;
 
     this.projectService.createProject(this.nuevoProyecto).subscribe({
       next: (res) => {
+        this.enviandoProyecto = false;
         this.mensajeExitoProyecto = true;
 
-        // 🚀 Notifica a los otros componentes
         this.sincronizacionService.notificarProyectoCreado();
 
         setTimeout(() => {
@@ -128,10 +120,10 @@ export class Dashboard implements OnInit {
       error: (err) => {
         console.error('❌ Error al crear proyecto:', err);
         this.mensajeErrorProyecto = true;
+        this.enviandoProyecto = false;
 
         setTimeout(() => {
           this.mensajeErrorProyecto = false;
-          this.enviandoProyecto = false;
         }, 3000);
       },
     });

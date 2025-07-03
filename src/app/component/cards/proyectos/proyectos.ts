@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-
+import { Sincronizacion } from '../../../services/sincronizacion';
 import { DashboardServices } from '../../../services/Home/dashboard';
 import { ProjectService } from '../../../services/Projects/project';
 import { ProyectoResumen } from '../../../interfaces/home';
@@ -29,7 +29,8 @@ export class ResumenProyectosComponent implements OnInit {
   constructor(
     private dashboardService: DashboardServices,
     private projectService: ProjectService,
-    private router: Router
+    private router: Router,
+    private sincronizacionService: Sincronizacion
   ) {}
 
   ngOnInit(): void {
