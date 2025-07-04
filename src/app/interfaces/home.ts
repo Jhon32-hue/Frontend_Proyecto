@@ -27,6 +27,6 @@ export interface ProyectoResumen {
   id_proyecto: number;
   nombre: string;
   descripcion: string;
-  estado_proyecto: boolean;
+  estado_proyecto: 'activo' | 'en_progreso' | 'hecho' | 'finalizado';
   usuario: number;
 }

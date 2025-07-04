@@ -5,10 +5,18 @@ export const guestGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const token = localStorage.getItem('accessToken');
 
-  if (!token) {
-    return true; // Usuario no autenticado → puede entrar
-  } else {
-    router.navigate(['/dashboard']); // Usuario autenticado → redirigir
-    return false;
+  // ✅ Si NO hay token → permitir acceso a login/register
+  if (!token) return true;
+
+  // ✅ Validar si la navegación fue controlada
+  const accesoPermitido = sessionStorage.getItem('fromGuestNavigation');
+
+  if (accesoPermitido === 'true') {
+    sessionStorage.removeItem('fromGuestNavigation'); // evitar reuso
+    return true;
   }
+
+  // 🔴 Usuario autenticado intenta forzar acceso a login/register
+  router.navigate(['/dashboard']);
+  return false;
 };

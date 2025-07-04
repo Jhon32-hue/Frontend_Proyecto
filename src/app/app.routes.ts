@@ -4,10 +4,12 @@ import { Register } from './pages/auth/register/register';
 import { Dashboard } from './pages/home/dashboard/dashboard';
 import { authGuard } from './Guards/autentication/auth-guard';
 import { guestGuard } from './Guards/guest-guard';
+import { ProjectList } from './pages/projects/project-list/project-list';
+import { strictProjectGuard } from './Guards/strict-project-guard-guard';
 
 export const routes: Routes = [
   {
-    path: '', 
+    path: '',
     component: Login,
     canActivate: [guestGuard]
   },
@@ -20,5 +22,10 @@ export const routes: Routes = [
     path: 'dashboard',
     component: Dashboard,
     canActivate: [authGuard]
+  },
+  {
+    path: 'project_list',
+    component: ProjectList,
+    canActivate: [strictProjectGuard]  
   }
 ];

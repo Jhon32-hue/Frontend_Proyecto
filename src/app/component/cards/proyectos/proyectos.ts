@@ -1,6 +1,8 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { ProjectList } from '../../../pages/projects/project-list/project-list';
 import { Sincronizacion } from '../../../services/sincronizacion';
 import { DashboardServices } from '../../../services/Home/dashboard';
 import { ProjectService } from '../../../services/Projects/project';
@@ -13,18 +15,19 @@ import { ProyectoResumen } from '../../../interfaces/home';
   templateUrl: './proyectos.html',
   styleUrl: './proyectos.css'
 })
-export class ResumenProyectosComponent implements OnInit {
+export class ResumenProyectosComponent implements OnInit, OnDestroy {
   public loading = true;
   public proyectos: ProyectoResumen[] = [];
 
-  public userId = 1; // ⚠️ Reemplazar por el ID real del usuario autenticado
+  public userId = 1; // ⚠️ Sustituir por el ID real del usuario autenticado
 
   modalAbierto = false;
   modalEliminar = false;
   proyectoSel: ProyectoResumen | null = null;
 
-  // 🔄 Emitir actividad al padre
   @Output() proyectoSeleccionado = new EventEmitter<ProyectoResumen>();
+
+  private subs = new Subscription();
 
   constructor(
     private dashboardService: DashboardServices,
@@ -33,10 +36,31 @@ export class ResumenProyectosComponent implements OnInit {
     private sincronizacionService: Sincronizacion
   ) {}
 
+  /* ──────────────────────────────  CICLO DE VIDA  ───────────────────────────── */
+
   ngOnInit(): void {
+    // ➊ Cargar proyectos al iniciar
+    this.cargarProyectos();
+
+    // ➋ Volver a cargarlos cuando el servicio emita “proyectoCreado”
+    this.subs.add(
+      this.sincronizacionService.proyectoCreado$.subscribe(() => this.cargarProyectos())
+    );
+  }
+
+  ngOnDestroy(): void {
+    // 🧹 Evitar fugas de memoria
+    this.subs.unsubscribe();
+  }
+
+  /* ───────────────────────────────  MÉTODOS  ──────────────────────────────── */
+
+  /** Descarga y ordena los proyectos (más recientes primero) */
+  private cargarProyectos(): void {
+    this.loading = true;
     this.dashboardService.getResumenProyectos().subscribe({
       next: (data) => {
-        this.proyectos = data;
+        this.proyectos = data.sort((a, b) => b.id_proyecto - a.id_proyecto);
         this.loading = false;
       },
       error: (error) => {
@@ -46,39 +70,37 @@ export class ResumenProyectosComponent implements OnInit {
     });
   }
 
-  // ✅ Abrir modal de detalle
+  /*  Modal de detalle  */
   abrirModal(proyecto: ProyectoResumen) {
-  this.proyectoSel = proyecto;
-  this.modalAbierto = true;
+    this.proyectoSel = proyecto;
+    this.modalAbierto = true;
+    this.proyectoSeleccionado.emit(proyecto); // ➜ comunicar al componente padre
+  }
 
-  // 🟢 Emitimos al padre
-  this.proyectoSeleccionado.emit(proyecto);
-}
-
-  // ❌ Cerrar modal de detalle
   cerrarModal() {
     this.modalAbierto = false;
     this.proyectoSel = null;
   }
 
-  // 🔁 Redirigir a vista de todos los proyectos
+  /*  Navegación  */
   verTodosProyectos() {
-    this.router.navigate(['/proyectos']);
+    sessionStorage.setItem('fromValidNavigation', 'true'); // 🔑 agrega esta línea
+    this.router.navigate(['/project_list']);
   }
 
-  // ✏️ Acción editar (por ahora solo log)
+
+
+  /*  Edición (placeholder)  */
   editarProyecto(proyecto: ProyectoResumen) {
     console.log('Editar proyecto:', proyecto);
-    // Aquí podrías navegar a `/proyectos/:id/editar` o mostrar un formulario
   }
 
-  // 🗑️ Mostrar modal de confirmación
+  /*  Eliminación  */
   confirmarEliminar(proyecto: ProyectoResumen) {
     this.proyectoSel = proyecto;
     this.modalEliminar = true;
   }
 
-  // ✅ Confirmar eliminación
   eliminarConfirmado() {
     if (!this.proyectoSel) return;
 
@@ -97,13 +119,15 @@ export class ResumenProyectosComponent implements OnInit {
     });
   }
 
-  // ❌ Cancelar eliminación
   cancelarEliminar() {
     this.modalEliminar = false;
   }
 
-  // 🔐 Validar si el usuario actual es el creador del proyecto
+  /*  Utilidades  */
   esCreador(proyecto: ProyectoResumen): boolean {
     return proyecto.usuario === this.userId;
   }
+
+
 }
+

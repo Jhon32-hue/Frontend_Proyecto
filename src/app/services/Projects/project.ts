@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProjectCreate } from '../../pages/projects/project-create/project-create';
+import { DeleteProject } from '../../interfaces/projects';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +22,9 @@ export class ProjectService {
   }
 
   deleteProject(id: number): Observable<any> {
-  const url = `${this.apiUrl}gestion/${id}/`;
-  return this.http.delete(url);
-}
+    const url = `${this.apiUrl}gestion/${id}/`;
+    return this.http.delete(url);
+  }
+
 
 }

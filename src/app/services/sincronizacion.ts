@@ -1,17 +1,26 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { DeleteProject } from '../interfaces/projects';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Sincronizacion {
 
-  // ▶️ Emisión de eventos (por ejemplo, nuevo proyecto creado)
+  // ▶️ Emisión de evento de nuevo proyecto creado
   private proyectoCreado = new Subject<void>();
   proyectoCreado$ = this.proyectoCreado.asObservable();
 
   notificarProyectoCreado() {
     this.proyectoCreado.next();
+  }
+
+   // ▶️ Emisión de evento de nuevo proyecto eliminado
+  private proyectoEliminado = new Subject<DeleteProject>();
+  proyectoEliminado$ = this.proyectoEliminado.asObservable();
+
+  notificarProyectoEliminado(proyecto: DeleteProject) {
+    this.proyectoEliminado.next(proyecto);
   }
 
   // 🌙 Estado del modo oscuro
@@ -30,7 +39,6 @@ export class Sincronizacion {
   const nuevoModo = !this.darkModeSubject.value;
   this.setDarkMode(nuevoModo, usarDelay);
 }
-
 
   /**
    * 🔧 Aplica y sincroniza modo oscuro
@@ -63,4 +71,6 @@ export class Sincronizacion {
   getDarkMode(): boolean {
     return this.darkModeSubject.value;
   }
+
+  
 }

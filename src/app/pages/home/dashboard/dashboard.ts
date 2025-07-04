@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Sidebar } from '../../../component/sidebar/sidebar';
 import { TodayTasksComponent } from '../../../component/cards/today-tasks/today-tasks';
@@ -6,12 +6,15 @@ import { ResumenProyectosComponent } from '../../../component/cards/proyectos/pr
 import { ActividadUsuarioComponent } from '../../../component/cards/actividad/actividad';
 import { CalendarPanel } from '../../../component/calendar-panel/calendar-panel';
 import { Header } from '../../../component/header/header';
-import { ActividadUsuario } from '../../../interfaces/home';
-import { ProyectoResumen } from '../../../interfaces/home';
+import { ActividadUsuario, ProyectoResumen } from '../../../interfaces/home';
 import { FormsModule } from '@angular/forms';
 import { ProjectService } from '../../../services/Projects/project';
 import { ProjectCreate } from '../../../interfaces/projects';
 import { Sincronizacion } from '../../../services/sincronizacion';
+import { AuthServices } from '../../../services/Auth/auth';
+import { DeleteProject } from '../../../interfaces/projects';
+
+type ScreenSize = 'sm' | 'md' | 'lg';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,43 +33,96 @@ import { Sincronizacion } from '../../../services/sincronizacion';
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
+  /* ---------- ⚙️ Estado general ---------- */
   isSidebarOpen = true;
-  nombreCompleto: string = 'Usuario';
+  screenSize: ScreenSize = 'lg';
+  nombreCompleto = 'Usuario';
 
+  isDarkMode = false;
+
+  /* ---------- 🔔 Modales ---------- */
   modalAbierto = false;
   actividadSel: ActividadUsuario | null = null;
 
-  proyectoSel: ProyectoResumen | null = null;
   modalProyectoAbierto = false;
+  proyectoSel: ProyectoResumen | null = null;
 
+  modalEliminarProyecto = false;
   modalCrearProyecto = false;
+  showLogoutModal = false;
+
   mensajeExitoProyecto = false;
   mensajeErrorProyecto = false;
-
   enviandoProyecto = false;
 
-  nuevoProyecto: ProjectCreate = {
+  mostrarContactos: boolean = false;
+
+  /* ---------- 📦 Formulario proyecto ---------- */
+  nuevoProyecto: ProjectCreate & { id_proyecto?: number } = {
     nombre: '',
     descripcion: '',
     estado_proyecto: 'activo',
   };
 
+  contactos = [
+    { nombre: 'Juan Pérez', avatar: 'assets/avatar1.png' },
+    { nombre: 'Lucía Gómez', avatar: 'assets/avatar2.png' },
+    { nombre: 'Carlos Ruiz', avatar: 'assets/avatar3.png' },
+  ];
+
   constructor(
     private projectService: ProjectService,
-    private sincronizacionService: Sincronizacion
+    private sincronizacionService: Sincronizacion,
+    private authServicies: AuthServices,
+    private renderer: Renderer2
   ) {}
 
-  ngOnInit() {
-    const nombre = localStorage.getItem('nombre_completo');
-    if (nombre) {
-      this.nombreCompleto = nombre;
+  /* ===== 🖥️ DETECCIÓN DE PANTALLA ===== */
+  private setScreenSize(width: number) {
+    if (width < 640) this.screenSize = 'sm';
+    else if (width < 1024) this.screenSize = 'md';
+    else this.screenSize = 'lg';
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    const prevSize = this.screenSize;
+    this.setScreenSize(window.innerWidth);
+    if (this.screenSize !== prevSize) {
+      this.isSidebarOpen = this.screenSize === 'lg';
+      this.actualizarScrollBody();
     }
   }
 
-  onSidebarToggle(open: boolean) {
-    this.isSidebarOpen = open;
+  /* ===== 🔄 Ciclo de vida ===== */
+  ngOnInit() {
+    const nombre = localStorage.getItem('nombre_completo');
+    if (nombre) this.nombreCompleto = nombre;
+
+    this.setScreenSize(window.innerWidth);
+    this.isSidebarOpen = this.screenSize === 'lg';
+    this.actualizarScrollBody();
+
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark') {
+      this.enableDarkMode();
+    } else {
+      this.disableDarkMode();
+    }
   }
 
+  /* ===== 🟪 Sidebar ===== */
+  onSidebarToggle(open: boolean) {
+    this.isSidebarOpen = open;
+    this.actualizarScrollBody();
+  }
+
+  private actualizarScrollBody() {
+    const esMovil = this.screenSize !== 'lg';
+    document.body.style.overflow = esMovil && this.isSidebarOpen ? 'hidden' : 'auto';
+  }
+
+  /* ===== 💬 Modal actividad ===== */
   abrirModalDesdeDashboard(actividad: ActividadUsuario) {
     this.actividadSel = actividad;
     this.modalAbierto = true;
@@ -76,6 +132,7 @@ export class Dashboard implements OnInit {
     this.modalAbierto = false;
   }
 
+  /* ===== 📁 Modal proyecto detalle ===== */
   abrirModalDesdeProyectos(proyecto: ProyectoResumen) {
     this.proyectoSel = proyecto;
     this.modalProyectoAbierto = true;
@@ -86,6 +143,7 @@ export class Dashboard implements OnInit {
     this.proyectoSel = null;
   }
 
+  /* ===== ➕ Modal crear proyecto ===== */
   abrirModalProyectoDesdeHeader() {
     this.modalCrearProyecto = true;
   }
@@ -106,10 +164,9 @@ export class Dashboard implements OnInit {
     this.mensajeErrorProyecto = false;
 
     this.projectService.createProject(this.nuevoProyecto).subscribe({
-      next: (res) => {
+      next: () => {
         this.enviandoProyecto = false;
         this.mensajeExitoProyecto = true;
-
         this.sincronizacionService.notificarProyectoCreado();
 
         setTimeout(() => {
@@ -121,11 +178,80 @@ export class Dashboard implements OnInit {
         console.error('❌ Error al crear proyecto:', err);
         this.mensajeErrorProyecto = true;
         this.enviandoProyecto = false;
-
-        setTimeout(() => {
-          this.mensajeErrorProyecto = false;
-        }, 3000);
+        setTimeout(() => (this.mensajeErrorProyecto = false), 3000);
       },
     });
+  }
+
+  /* ===== 🗑️ Eliminar proyecto ===== */
+  abrirModalEliminarProyecto(): void {
+    this.modalEliminarProyecto = true;
+  }
+
+  cancelarEliminarProyecto(): void {
+    this.modalEliminarProyecto = false;
+  }
+
+  confirmarEliminarProyecto(): void {
+    if (!this.proyectoSel || !this.proyectoSel.id_proyecto) {
+      console.warn('No hay proyecto válido para eliminar');
+      return;
+    }
+
+    this.projectService.deleteProject(this.proyectoSel.id_proyecto).subscribe({
+      next: () => {
+        this.modalEliminarProyecto = false;
+        this.cerrarModalProyecto();
+      },
+      error: (err) => {
+        console.error('Error al eliminar el proyecto', err);
+        this.modalEliminarProyecto = false;
+        alert('Hubo un error al eliminar el proyecto.');
+      },
+    });
+  }
+
+  /* ===== 🔒 Modal cerrar sesión ===== */
+  abrirModalLogoutDesdeHeader() {
+    this.showLogoutModal = true;
+  }
+
+  confirmarLogout() {
+    this.authServicies.logout();
+    this.showLogoutModal = false;
+  }
+
+  cancelarLogout() {
+    this.showLogoutModal = false;
+  }
+
+  /* ===== 🌙 Modo oscuro ===== */
+  toggleDarkMode(): void {
+    this.isDarkMode = !this.isDarkMode;
+    if (this.isDarkMode) {
+      this.enableDarkMode();
+    } else {
+      this.disableDarkMode();
+    }
+  }
+
+  enableDarkMode(): void {
+    this.renderer.addClass(document.documentElement, 'dark');
+    localStorage.setItem('theme', 'dark');
+    this.isDarkMode = true;
+  }
+
+  disableDarkMode(): void {
+    this.renderer.removeClass(document.documentElement, 'dark');
+    localStorage.setItem('theme', 'light');
+    this.isDarkMode = false;
+  }
+
+  /* ===== 📐 Padding para layout ===== */
+  get mainPaddingClass(): string {
+    if (this.screenSize !== 'lg' && this.isSidebarOpen) {
+      return 'pt-32';
+    }
+    return 'pt-24';
   }
 }

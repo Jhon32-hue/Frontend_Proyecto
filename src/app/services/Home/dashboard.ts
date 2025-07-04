@@ -32,5 +32,15 @@ export class DashboardServices {
     const url = this.apiUrl + 'gestion/';
     return this.http.get<ProyectoResumen[]>(url);
   }
+
+  // 📌 Actualizar estado de un proyecto
+  updateEstadoProyecto(id: number, nuevoEstado: string): Observable<any> {
+    const url = `${this.apiUrl}gestion/${id}/`;
+    const body = { estado_proyecto: nuevoEstado };
+    return this.http.patch(url, body);
+  }
+
+  
+
 }
 
