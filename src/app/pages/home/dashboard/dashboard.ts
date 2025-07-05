@@ -15,7 +15,6 @@ import { AuthServices } from '../../../services/Auth/auth';
 import { DeleteProject } from '../../../interfaces/projects';
 
 type ScreenSize = 'sm' | 'md' | 'lg';
-
 @Component({
   selector: 'app-dashboard',
   standalone: true,

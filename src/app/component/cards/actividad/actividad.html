@@ -1,15 +1,12 @@
-<!-- 📦 ACTIVIDAD RECIENTE -->
-<div
-  class="relative w-full p-6 rounded-3xl border border-gray-200 dark:border-white/10
-         bg-white/90 dark:bg-white/5 backdrop-blur-xl shadow-xl group transition-all"
->
-  <!-- ✨ Glow decorativo externo -->
+<!-- 📦 ACTIVIDAD RECIENTE (mejorado) -->
+<div class="relative w-full p-6 rounded-3xl border border-gray-200 dark:border-white/10 bg-white/90 dark:bg-white/5 backdrop-blur-xl shadow-xl group transition-all py-1">
+  <!-- Glow externo -->
   <div class="absolute inset-0 rounded-3xl bg-gradient-to-br from-sky-100/40 to-transparent blur-xl opacity-40 pointer-events-none group-hover:opacity-70 transition-all duration-500"></div>
 
-  <!-- 🧷 Encabezado -->
-  <div class="relative pb-4 border-b border-gray-200 dark:border-white/10 z-10">
+  <!-- Encabezado -->
+  <div class="relative pb-5 border-b border-gray-200 dark:border-white/10 z-10">
     <div class="flex justify-between items-center">
-      <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+      <h2 class="mt-4 text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
         <div class="bg-sky-100 dark:bg-sky-800 text-sky-600 dark:text-sky-300 p-2 rounded-full shadow-sm">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M3 4h18M3 10h18M3 16h18" />
@@ -20,59 +17,48 @@
     </div>
   </div>
 
-  <!-- 🔄 Cargando -->
+  <!-- Cargando -->
   <div *ngIf="loading" class="text-gray-500 dark:text-gray-400 text-sm italic mt-4 z-10 relative">
     Cargando actividad...
   </div>
 
-  <!-- 🚫 Sin actividad -->
+  <!-- Sin actividad -->
   <p *ngIf="!loading && !actividadesCombinadas().length" class="text-gray-400 dark:text-gray-500 italic mt-4 z-10 relative">
     No hay actividad reciente.
   </p>
 
-  <!-- ✅ Tarjetas de actividad -->
+  <!-- Tarjetas -->
   <div *ngIf="!loading && actividadesCombinadas().length" class="overflow-x-auto -mx-2 px-2 relative z-10 mt-4">
-    <div class="flex gap-4 pb-4 snap-x snap-mandatory custom-scrollbar scroll-smooth">
+    <div class="flex gap-6 pb-4 snap-x snap-mandatory custom-scrollbar scroll-smooth">
+      <div *ngFor="let a of actividadesCombinadas().slice(0, 10); let i = index"
+           (click)="abrirModal(a)"
+           class="relative flex-shrink-0 snap-start w-72 p-4 rounded-xl border backdrop-blur-lg bg-white/90 dark:bg-gray-800/40 shadow-md hover:shadow-xl hover:scale-[1.025] hover:ring-2 hover:ring-sky-300 dark:hover:ring-sky-600 transition-all duration-300 group overflow-hidden cursor-pointer animate-fade-up"
+           [ngStyle]="{ 'animation-delay': (i * 100) + 'ms' }"
+           [ngClass]="{
+             'border-red-300 dark:border-red-700 bg-red-50/80 dark:bg-red-900/30': a.accion_realizada === 'Proyecto eliminado permanentemente',
+             'border-gray-200 dark:border-white/10': a.accion_realizada !== 'Proyecto eliminado permanentemente'
+           }">
+        <!-- Glow interno -->
+        <div class="absolute -inset-[1px] rounded-xl bg-gradient-to-br from-white/10 to-transparent blur-md opacity-20 pointer-events-none transition"></div>
 
-      <div
-        *ngFor="let a of actividadesCombinadas().slice(0, 10); let i = index"
-        (click)="abrirModal(a)"
-        class="relative flex-shrink-0 snap-start w-72 p-4 rounded-2xl border
-               backdrop-blur-lg bg-white/90 dark:bg-gray-800/40 shadow-md
-               hover:shadow-xl hover:scale-[1.03] hover:ring-2 hover:ring-sky-300 dark:hover:ring-sky-600
-               transition-all duration-300 group space-y-4 overflow-hidden cursor-pointer animate-fade-up"
-        [ngStyle]="{ 'animation-delay': (i * 100) + 'ms' }"
-        [ngClass]="{
-          'border-red-300 dark:border-red-700 bg-red-100 dark:bg-red-900/20': a.accion_realizada === 'Proyecto eliminado permanentemente',
-          'border-gray-200 dark:border-white/10': a.accion_realizada !== 'Proyecto eliminado permanentemente'
-        }"
-      >
-        <!-- ✨ Glow decorativo tenue -->
-        <div class="absolute -inset-[1px] rounded-2xl pointer-events-none bg-gradient-to-br from-white/10 to-transparent
-                    blur-sm opacity-30 transition"></div>
-
-        <!-- 🔠 Contenido -->
-        <div class="flex justify-between items-start mb-1 z-10 relative">
-          <p
-            class="text-sm font-semibold truncate w-44"
-            [ngClass]="{
-              'text-red-800 dark:text-red-400': a.accion_realizada === 'Proyecto eliminado permanentemente',
-              'text-gray-800 dark:text-white': a.accion_realizada !== 'Proyecto eliminado permanentemente'
-            }"
-          >
+        <!-- Encabezado -->
+        <div class="flex justify-between items-start mb-2 z-10 relative">
+          <p class="text-[15px] font-semibold truncate w-44"
+             [ngClass]="{
+               'text-red-800 dark:text-red-400': a.accion_realizada === 'Proyecto eliminado permanentemente',
+               'text-gray-800 dark:text-white': a.accion_realizada !== 'Proyecto eliminado permanentemente'
+             }">
             {{ a.nombre_proyecto }}
           </p>
 
-          <!-- 🔘 Icono -->
-          <div
-            class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs shadow-md"
-            [ngClass]="{
-              'bg-emerald-500': tipoAccion(a.accion_realizada) === 'crear',
-              'bg-amber-500': tipoAccion(a.accion_realizada) === 'editar',
-              'bg-rose-500': tipoAccion(a.accion_realizada) === 'eliminar',
-              'bg-sky-500': tipoAccion(a.accion_realizada) === 'otro'
-            }"
-          >
+          <!-- Icono de acción -->
+          <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs shadow-md"
+               [ngClass]="{
+                 'bg-emerald-500': tipoAccion(a.accion_realizada) === 'crear',
+                 'bg-amber-500': tipoAccion(a.accion_realizada) === 'editar',
+                 'bg-rose-500': tipoAccion(a.accion_realizada) === 'eliminar',
+                 'bg-sky-500': tipoAccion(a.accion_realizada) === 'otro'
+               }">
             <svg *ngIf="tipoAccion(a.accion_realizada) === 'crear'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M12 5v14M5 12h14" />
             </svg>
@@ -90,20 +76,18 @@
 
         <div class="h-px bg-gray-200 dark:bg-white/10 my-1 rounded"></div>
 
-        <p
-          class="text-xs truncate z-10 relative"
-          [ngClass]="{
-            'text-red-700 dark:text-red-400': a.accion_realizada === 'Proyecto eliminado permanentemente',
-            'text-gray-600 dark:text-gray-300': a.accion_realizada !== 'Proyecto eliminado permanentemente'
-          }"
-        >
+        <!-- Acción -->
+        <p class="text-[13px] leading-snug z-10 relative"
+           [ngClass]="{
+             'text-red-700 dark:text-red-400': a.accion_realizada === 'Proyecto eliminado permanentemente',
+             'text-gray-600 dark:text-gray-300': a.accion_realizada !== 'Proyecto eliminado permanentemente'
+           }">
           {{ a.accion_realizada }}
         </p>
 
-        <p
-          *ngIf="a.accion_realizada === 'Proyecto eliminado permanentemente'"
-          class="text-xs text-red-600 dark:text-red-400 italic mt-1 z-10 relative"
-        >
+        <!-- Mensaje de advertencia -->
+        <p *ngIf="a.accion_realizada === 'Proyecto eliminado permanentemente'"
+           class="text-[12px] text-red-600 dark:text-red-400 italic mt-1 z-10 relative">
           Este proyecto fue eliminado y ya no está disponible.
         </p>
       </div>

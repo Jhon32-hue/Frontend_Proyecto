@@ -44,4 +44,16 @@ export class AuthServices {
       return false;
     }
   }
+
+  getUsuarioActual(): { user_id: number; email: string; nombre_completo: string } | null {
+  const userStr = localStorage.getItem('user');
+  if (!userStr) return null;
+
+  try {
+    return JSON.parse(userStr);
+  } catch {
+    return null;
+  }
+}
+
 }

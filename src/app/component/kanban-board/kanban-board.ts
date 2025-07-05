@@ -7,6 +7,15 @@ import { HistoriaUsuarioService } from '../../services/HU/historia-usuario';
 import { ParticipacionService } from '../../services/participacion-proyecto/participacion';
 import { ProyectoResumen } from '../../interfaces/home';
 import { HistoriaUsuario } from '../../interfaces/historia-usuario';
+import { AuthServices } from '../../services/Auth/auth';
+import { ParticipacionProyecto } from '../../interfaces/participacion-proyecto';
+
+interface ComentarioProyecto {
+  id_usuario: number;
+  nombre_usuario: string;
+  texto: string;
+  fecha?: string;
+}
 
 interface ProyectoSummary {
   id: number;
@@ -26,11 +35,9 @@ interface ProyectoSummary {
     nombre_completo: string;
   };
   estado_proyecto?: string;
-
-  // 🔄 Añadir para loader visual en drag & drop
   updating?: boolean;
+  comentarios: ComentarioProyecto[];
 }
-
 
 type EstadoProyecto = 'activo' | 'en_progreso' | 'hecho' | 'finalizado';
 
@@ -46,7 +53,8 @@ export class KanbanBoard implements OnInit {
     private dashboardService: DashboardServices,
     private huService: HistoriaUsuarioService,
     private participacionService: ParticipacionService,
-    private router: Router
+    private router: Router,
+    private authService: AuthServices
   ) {}
 
   proyectosPorEstado: Record<EstadoProyecto, ProyectoSummary[]> = {
@@ -63,6 +71,15 @@ export class KanbanBoard implements OnInit {
   vistaSeleccionada = 'Tablero';
   estados: EstadoProyecto[] = ['activo', 'en_progreso', 'hecho', 'finalizado'];
 
+  nuevoComentario: string = '';
+  toastMensaje: string | null = null;
+  toastTipo: 'success' | 'error' = 'success';
+  verTodosComentarios: boolean = false;
+
+  participantes: ParticipacionProyecto[] | null = null;
+
+
+
   ngOnInit(): void {
     this.cargarProyectos();
   }
@@ -75,6 +92,8 @@ export class KanbanBoard implements OnInit {
     this.dashboardService.getResumenProyectos().subscribe({
       next: (proyectos: ProyectoResumen[]) => {
         this.columns = this.mapearProyectos(proyectos);
+        this.cargarComentariosDesdeLocalStorage();
+
         proyectos.forEach((p) => {
           this.cargarHuDeProyecto(p.id_proyecto);
           this.cargarRolUsuarioEnProyecto(p.id_proyecto);
@@ -92,19 +111,33 @@ export class KanbanBoard implements OnInit {
   }
 
   private cargarRolUsuarioEnProyecto(idProyecto: number): void {
-    this.participacionService.getParticipacionDetalle(idProyecto).subscribe({
-      next: (participacion) => {
-        const columna = this.columns.find(
-          (c) => c.id === participacion.id_proyecto.id_proyecto
-        );
-        if (columna && participacion?.id_rol?.nombre_rol) {
-          columna.rol = participacion.id_rol.nombre_rol;
-        }
-      },
-      error: (err) =>
-        console.warn(`No se pudo obtener el rol en el proyecto ${idProyecto}`, err),
-    });
-  }
+  this.participacionService.getParticipacionesPorProyecto(idProyecto).subscribe({
+    next: (res: ParticipacionProyecto[]) => {
+      const usuarioActual = this.authService.getUsuarioActual();
+
+      if (!usuarioActual || !usuarioActual.user_id) {
+        console.warn(`⚠️ Usuario actual no disponible al consultar rol en proyecto ${idProyecto}`);
+        return;
+      }
+
+      const miParticipacion = res.find(
+        p => p.id_usuario?.id === usuarioActual.user_id
+      );
+
+      const columna = this.columns.find(c => c.id === idProyecto);
+
+      if (columna && miParticipacion?.id_rol?.nombre_rol) {
+        columna.rol = miParticipacion.id_rol.nombre_rol;
+      } else {
+        console.warn(`⚠️ No se encontró participación válida o rol para usuario ${usuarioActual.user_id}`);
+      }
+    },
+    error: (err) => {
+      console.warn(`No se pudo obtener el rol en el proyecto ${idProyecto}`, err);
+    },
+  });
+}
+
 
   private agregarHuInfoAlProyecto(id: number, hu: HistoriaUsuario[]): void {
     const columna = this.columns.find((c) => c.id === id);
@@ -121,14 +154,36 @@ export class KanbanBoard implements OnInit {
   abrirResumen(proyecto: ProyectoSummary): void {
     this.selectedProyecto = proyecto;
     this.showModal = true;
+    this.cargarParticipantesProyecto(proyecto.id);
   }
+
+private cargarParticipantesProyecto(id: number): void {
+  // Mientras carga los datos, mostramos el loader (skeleton)
+  this.participantes = null ;
+
+  this.participacionService.getParticipacionesPorProyecto(id).subscribe({
+    next: (res: ParticipacionProyecto[]) => {
+      // ✅ Cuando llegan los datos, se asignan correctamente
+      this.participantes = res;
+    },
+    error: (err) => {
+      console.warn('No se pudieron cargar participantes del proyecto', err);
+      // 🚫 Si hay error, se considera arreglo vacío para que muestre el mensaje "No hay participantes"
+      this.participantes = [];
+    }
+  });
+}
+
+
 
   cerrarModal(): void {
     this.selectedProyecto = undefined;
     this.showModal = false;
+    this.nuevoComentario = '';
+    this.participantes = [];
   }
 
-  irAlTableroHU(task: any): void {
+  irAlTableroHU(task: ProyectoSummary): void {
     if (task?.id) {
       this.router.navigate(['/historia-usuario', task.id, 'hu']);
     }
@@ -142,7 +197,7 @@ export class KanbanBoard implements OnInit {
       finalizado: [],
     };
 
-    const mapped: ProyectoSummary[] = proyectos.map((p) => {
+    return proyectos.map((p) => {
       const resumen: ProyectoSummary = {
         id: p.id_proyecto,
         nombre: p.nombre,
@@ -152,6 +207,7 @@ export class KanbanBoard implements OnInit {
         usuario: p.usuario ?? null,
         huCount: 0,
         huPorEstado: { por_hacer: 0, en_proceso: 0, cerrada: 0 },
+        comentarios: [],
       };
 
       const estadoKey = p.estado_proyecto?.toLowerCase() as EstadoProyecto;
@@ -163,8 +219,51 @@ export class KanbanBoard implements OnInit {
 
       return resumen;
     });
+  }
 
-    return mapped;
+  private cargarComentariosDesdeLocalStorage(): void {
+    this.columns.forEach((proyecto) => {
+      const key = `comentarios_proyecto_${proyecto.id}`;
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            proyecto.comentarios = parsed;
+          }
+        } catch (e) {
+          console.warn(`❌ Error al parsear comentarios del proyecto ${proyecto.id}`, e);
+          proyecto.comentarios = [];
+        }
+      }
+    });
+  }
+
+  guardarComentario(): void {
+    const usuario = this.authService.getUsuarioActual();
+
+    if (this.nuevoComentario.trim() && this.selectedProyecto && usuario) {
+      const nuevoComentario: ComentarioProyecto = {
+        texto: this.nuevoComentario.trim(),
+        nombre_usuario: usuario.nombre_completo,
+        id_usuario: usuario.user_id,
+        fecha: new Date().toISOString(),
+      };
+
+      this.selectedProyecto.comentarios.push(nuevoComentario);
+
+      const comentariosKey = `comentarios_proyecto_${this.selectedProyecto.id}`;
+      localStorage.setItem(comentariosKey, JSON.stringify(this.selectedProyecto.comentarios));
+
+      this.nuevoComentario = '';
+    } else if (!usuario) {
+      this.mostrarToast('❌ No se encontró información del usuario actual.', 'error');
+    }
+  }
+
+  mostrarComentarios() {
+    const comentarios = this.selectedProyecto?.comentarios || [];
+    return this.verTodosComentarios ? comentarios : comentarios.slice(-5);
   }
 
   getFilteredTasks(tasks: ProyectoSummary[]): ProyectoSummary[] {
@@ -174,7 +273,7 @@ export class KanbanBoard implements OnInit {
     );
   }
 
-  addTaskToColumn(column: ProyectoSummary) {
+  addTaskToColumn(column: ProyectoSummary): void {
     console.log('Agregar tarea a', column.nombre);
   }
 
@@ -182,47 +281,29 @@ export class KanbanBoard implements OnInit {
     event.preventDefault();
 
     const data = event.dataTransfer?.getData('text/plain');
-    if (!data) {
-      console.warn('❌ No se encontró data en el evento drag');
-      return;
-    }
+    if (!data) return;
 
     const parsed = JSON.parse(data);
     const taskId: number = parsed.task?.id;
     const columnaOrigen: EstadoProyecto = parsed.columnaOrigen;
 
-    if (!taskId || !columnaOrigen) {
-      console.error('❌ Datos inválidos en el evento drag');
-      return;
-    }
+    if (!taskId || !columnaOrigen) return;
 
     const origen = this.proyectosPorEstado[columnaOrigen];
     const destino = this.proyectosPorEstado[nuevoEstado];
 
-    const task = origen.find(p => p.id === taskId);
-    if (!task) {
-      console.warn('❌ Proyecto no encontrado en columna origen');
-      return;
-    }
+    const task = origen.find((p) => p.id === taskId);
+    if (!task || columnaOrigen === nuevoEstado) return;
 
-    if (columnaOrigen === nuevoEstado) {
-      console.log('⚠️ Mismo estado. No se actualiza.');
-      return;
-    }
-
-    // Guardar estado anterior por si hay que hacer rollback
     const estadoAnterior = task.estado;
     const estadoProyectoAnterior = task.estado_proyecto;
 
-    // Actualizar estado local antes de mandar PATCH (optimista)
     task.estado = nuevoEstado;
     task.estado_proyecto = nuevoEstado;
 
-    // Enviar PATCH al backend siempre
     this.dashboardService.updateEstadoProyecto(task.id, nuevoEstado).subscribe({
       next: () => {
-        // Si el backend respondió OK, mover visualmente el proyecto
-        const index = origen.findIndex(p => p.id === task.id);
+        const index = origen.findIndex((p) => p.id === task.id);
         if (index !== -1) {
           origen.splice(index, 1);
           destino.push(task);
@@ -230,10 +311,8 @@ export class KanbanBoard implements OnInit {
         }
       },
       error: (err) => {
-        // ❌ Si falla, hacer rollback visual
         task.estado = estadoAnterior;
         task.estado_proyecto = estadoProyectoAnterior;
-
         this.mostrarToast(
           '❌ No se pudo actualizar el estado: ' +
             (err?.error?.detail || 'Error del servidor'),
@@ -243,7 +322,6 @@ export class KanbanBoard implements OnInit {
       },
     });
   }
-
 
   onDragStart(event: DragEvent, task: ProyectoSummary, columnaOrigen: EstadoProyecto): void {
     const payload = {
@@ -257,10 +335,7 @@ export class KanbanBoard implements OnInit {
     event.dataTransfer?.setData('text/plain', JSON.stringify(payload));
   }
 
-  toastMensaje: string | null = null;
-  toastTipo: 'success' | 'error' = 'success';
-
-  mostrarToast(mensaje: string, tipo: 'success' | 'error' = 'success') {
+  mostrarToast(mensaje: string, tipo: 'success' | 'error' = 'success'): void {
     this.toastMensaje = mensaje;
     this.toastTipo = tipo;
     setTimeout(() => {
@@ -272,16 +347,11 @@ export class KanbanBoard implements OnInit {
     event.preventDefault();
   }
 
-
-  calcularProgreso(task: any): number {
-  const hu = task.huPorEstado || {};
-  const total = task.huCount || 0;
-  const cerradas = hu.cerrada || 0;
-
-  if (total === 0) return 0;
-
-  const progreso = Math.round((cerradas / total) * 100);
-  return progreso;
-}
-
+  calcularProgreso(task: ProyectoSummary): number {
+    const hu = task.huPorEstado || {};
+    const total = task.huCount || 0;
+    const cerradas = hu.cerrada || 0;
+    if (total === 0) return 0;
+    return Math.round((cerradas / total) * 100);
+  }
 }
