@@ -32,6 +32,7 @@ export const routes: Routes = [
   {
     path: 'historia-usuario',
     component: HistoriaUsuario,
+    canActivate: [strictProjectGuard]  
   }
 
 ];

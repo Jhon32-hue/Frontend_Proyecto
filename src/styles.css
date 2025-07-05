@@ -1,9 +1,78 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body { 
+  height: 100%; 
+}
+
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+}
+
 /* Transición para todos los elementos de la UI */
 html, body, * {
   transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+/* Animación para deslizar el toast desde el lado */
+@keyframes slideIn {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Animación para desvanecer el toast */
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Animación para parpadeo tipo hover */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Clase que aplica la animación de parpadeo */
+.toast-pulse {
+  animation: pulse 1s infinite;
+}
+
+/* Animación de sacudida (toast shake) */
+@keyframes toastShake {
+  0% {
+    transform: translateX(-10px);
+  }
+  25% {
+    transform: translateX(10px);
+  }
+  50% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Clase que aplica la animación de sacudida */
+.toast-shake {
+  animation: toastShake 0.5s ease-in-out;
 }
