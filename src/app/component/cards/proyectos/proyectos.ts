@@ -125,7 +125,7 @@ export class ResumenProyectosComponent implements OnInit, OnDestroy {
 
   /*  Utilidades  */
   esCreador(proyecto: ProyectoResumen): boolean {
-    return proyecto.usuario === this.userId;
+    return proyecto.usuario?.id === this.userId;
   }
 
 

@@ -20,44 +20,44 @@
   ></app-sidebar>
   
   
-  <div
-    [ngClass]="{
-      'lg:ml-60': isSidebarOpen && screenSize === 'lg',
-      'lg:ml-20': !isSidebarOpen && screenSize === 'lg',
-      'ml-0': screenSize !== 'lg'
-    }"
-    class="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24 4xl:px-28 py-10 space-y-15 mx-auto
-        max-w-none lg:max-w-[98%] xl:max-w-[96%] 2xl:max-w-[95%] 3xl:max-w-[94%] 4xl:max-w-[92%]
-        transition-all duration-300"
+<div
+  [ngClass]="[
+    screenSize === 'lg' ? (isSidebarOpen ? 'lg:ml-[20rem]' : 'lg:ml-[5rem]') : 'ml-0',
+    'w-full',
+    'px-4 sm:px-6 md:px-6 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24 4xl:px-28',
+    'py-10 space-y-12',
+    'mx-auto',
+    'max-w-none lg:max-w-[96%] 2xl:max-w-[94%] 4xl:max-w-[90%]',
+    'transition-all duration-300 ease-in-out'
+  ]"
+>
+  <h2 class="text-4xl font-bold text-gray-800 dark:text-white mt-6 mb-9">Dashboard</h2>
 
-  >
-
-
-  <div class="max-w-screen-xl w-full px-4 sm:px-6 xl:px-8 py-10 space-y-15 mx-auto">
-    <h2 class="text-4xl font-bold text-gray-800 dark:text-white bottom-0 -mt-9 mb-9">Dashboard</h2>
-
-    <!-- 🎯 BIENVENIDA + STATS -->
-    <section class="grid grid-cols-1 xl:grid-cols-4 gap-8">
-      <!-- Tarjeta de bienvenida ampliada -->
-      <div class="relative group xl:col-span-3 p-6 rounded-3xl border border-gray-200 dark:border-white/10 
+  <!-- 🌟 BIENVENIDA + STATS -->
+  <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div class="md:col-span-2 xl:col-span-3">
+      <!-- Tarjeta de bienvenida -->
+      <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
                   bg-gradient-to-br from-[#dbeafe] via-[#ede9fe] to-[#e0f2fe] dark:from-[#373e68] dark:via-[#4c4e80] dark:to-[#35546f] 
                   text-black dark:text-white shadow-xl hover:shadow-2xl hover:scale-[1.02] 
                   hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
         <div class="space-y-4 relative z-10">
-          <h2 class="text-3xl font-extrabold tracking-tight leading-tight">¡Hola, {{ nombreCompleto || 'Usuario' }}!</h2>
-          <p class="text-base text-black dark:text-gray-200 max-w-sm font-medium">
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight break-words">¡Hola, {{ nombreCompleto || 'Usuario' }}!</h2>
+          <p class="text-sm sm:text-base text-black dark:text-gray-200 max-w-md font-medium">
             Continúa con tus tareas y revisa tus avances del día.
           </p>
-          <button class="mt-20 px-6 py-2.5 bg-white text-indigo-700 rounded-xl font-semibold text-sm shadow-lg">
+          <button class="mt-6 px-6 py-2.5 bg-white text-indigo-700 rounded-xl font-semibold text-sm shadow-lg">
             Ver actividades
           </button>
         </div>
-        <img src="wmremove-transformed.png" class="absolute -bottom-8 right-1 sm:right-1 w-80 sm:w-100 opacity-90 hidden sm:block" />
+        <img src="wmremove-transformed.png" class="absolute -bottom-8 right-1 w-52 sm:w-64 md:w-72 opacity-90 hidden sm:block" />
         <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-sky-100/40 to-transparent blur-md opacity-60 pointer-events-none group-hover:opacity-90 transition"></div>
       </div>
+    </div>
 
-      <!-- Tarjeta de usuario "Jason" -->
-      <div class="relative group xl:col-span-1 p-6 rounded-3xl border border-gray-200 dark:border-white/10 
+    <div>
+      <!-- Tarjeta de usuario -->
+      <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
                   bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
                   hover:ring-2 hover:ring-indigo-400 transition-all duration-300 overflow-hidden">
         <div class="text-center space-y-4 relative z-10">
@@ -70,27 +70,24 @@
           <p class="mt-2 text-xs text-gray-500 dark:text-gray-300">21–30 Ago</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 📺 ACTIVIDAD + CONTACTOS -->
-    <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-      <div class="relative group xl:col-span-2 p-6 rounded-3xl border border-gray-200 dark:border-white/10 
+  <!-- 📺 ACTIVIDAD + CONTACTOS -->
+  <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div class="md:col-span-2 xl:col-span-2">
+      <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
                   bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
                   hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
-        <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-200 dark:border-white/10 z-10">
-          <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-600 dark:text-gray-300">
-          </h3>
-        </div>
         <app-actividad class="no-hover" (actividadSeleccionada)="abrirModalDesdeDashboard($event)"></app-actividad>
       </div>
-
+    </div>
+    <div>
       <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
                   bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
                   hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
         <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-200 dark:border-white/10 z-10">
-          <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-600 dark:text-gray-300">
-            Tus contactos
-          </h3>
+          <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-600 dark:text-gray-300">Tus contactos</h3>
           <span class="text-indigo-600 text-xs font-medium">Ver todos</span>
         </div>
         <div class="space-y-4 z-10 relative">
@@ -106,43 +103,36 @@
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 📋 TAREAS + PROYECTOS -->
-    <section class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-      <!-- 📝 Tareas -->
+  <!-- 📋 TAREAS + PROYECTOS -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
       <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
                   bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
                   hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
-        <div class="mb-4 pb-2 border-b border-gray-200 dark:border-white/10 z-10">
-          <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-600 dark:text-gray-300">
-          </h3>
-        </div>
         <app-today-tasks class="no-hover"></app-today-tasks>
       </div>
-
-      <!-- 🗂️ Proyectos -->
+    </div>
+    <div>
       <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
                   bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
                   hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
-        <div class="mb-4 pb-2 border-b border-gray-200 dark:border-white/10 z-10">
-          <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-600 dark:text-gray-300">
-          </h3>
-        </div>
         <app-proyectos class="no-hover" (proyectoSeleccionado)="abrirModalDesdeProyectos($event)"></app-proyectos>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 📅 Calendario (abajo, en fila completa) -->
-    <section class="mt-6 relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
-                    bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
-                    hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
-      <div class="mb-4 pb-2 border-b border-gray-200 dark:border-white/10 z-10">
-        <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-600 dark:text-gray-300">
-        </h3>
-      </div>
+  <!-- 🗓 CALENDARIO -->
+  <section class="mt-6">
+    <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
+                bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
+                hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
       <app-calendar-panel class="no-hover"></app-calendar-panel>
-    </section>
+    </div>
+  </section>
+
 
 <!-- ✅ MODAL CREAR NUEVO PROYECTO -->
 <div *ngIf="modalCrearProyecto" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md px-4 py-8">
