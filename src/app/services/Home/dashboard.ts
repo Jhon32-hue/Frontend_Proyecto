@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Tarea, ActividadUsuario, ProyectoResumen } from '../../interfaces/home';
-import { Observable } from 'rxjs';
+import { Observable, } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { catchError, map } from 'rxjs';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -26,9 +28,23 @@ export class DashboardServices {
 
   // 📦 3. Obtener resumen de proyectos
   getResumenProyectos(): Observable<ProyectoResumen[]> {
-    const url = `${this.apiUrl}gestion/`;
-    return this.http.get<ProyectoResumen[]>(url);
-  }
+  const url = `${this.apiUrl}gestion/`;
+  return this.http.get<ProyectoResumen[]>(url).pipe(
+    map((data) => {
+      // Verificar si la respuesta es un array
+      if (Array.isArray(data)) {
+        return data;
+      } else {
+        console.error('Error: Se esperaba un array, pero la respuesta es:', data);
+        return []; // Retornar un array vacío si no es un array
+      }
+    }),
+    catchError((err) => {
+      console.error('Error al obtener proyectos:', err);
+      return of([]); // Si hay error, retornar un array vacío
+    })
+  );
+}
 
   // 📝 4. Obtener un proyecto por ID
   getProyectoById(id: number): Observable<ProyectoResumen> {

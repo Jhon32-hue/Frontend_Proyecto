@@ -94,21 +94,25 @@ export class Dashboard implements OnInit {
   }
 
   /* ===== 🔄 Ciclo de vida ===== */
-  ngOnInit() {
-    const nombre = localStorage.getItem('nombre_completo');
-    if (nombre) this.nombreCompleto = nombre;
+ngOnInit() {
+  const nombre = localStorage.getItem('nombre_completo');
+  if (nombre) this.nombreCompleto = nombre;
 
-    this.setScreenSize(window.innerWidth);
-    this.isSidebarOpen = this.screenSize === 'lg';
-    this.actualizarScrollBody();
+  this.setScreenSize(window.innerWidth);
+  this.isSidebarOpen = this.screenSize === 'lg';
+  this.actualizarScrollBody();
 
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme === 'dark') {
-      this.enableDarkMode();
-    } else {
-      this.disableDarkMode();
-    }
+  const storedTheme = localStorage.getItem('theme');
+  if (storedTheme === 'dark') {
+    this.enableDarkMode();
+  } else {
+    this.disableDarkMode();
   }
+
+  // Establecer 'fromValidNavigation' para permitir navegar a project_list
+  sessionStorage.setItem('fromValidNavigation', 'true');
+}
+
 
   /* ===== 🟪 Sidebar ===== */
   onSidebarToggle(open: boolean) {

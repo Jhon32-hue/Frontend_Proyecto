@@ -7,3 +7,9 @@ export interface ParticipacionProyecto {
   fecha_incorporacion: string;
   invitado_por: { id: number; nombre_completo: string } | null;
 }
+
+export interface Rol {
+  id_rol: number;       
+  clave: string;        
+  nombre: string;       
+}

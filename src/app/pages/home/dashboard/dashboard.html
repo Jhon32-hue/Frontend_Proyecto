@@ -136,9 +136,12 @@
 
 <!-- ✅ MODAL CREAR NUEVO PROYECTO -->
 <div *ngIf="modalCrearProyecto" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md px-4 py-8">
-  <div class="relative w-full max-w-2xl bg-white dark:bg-gray-900/80 rounded-2xl border border-indigo-200 dark:border-indigo-700 shadow-[0_0_20px_rgba(99,102,241,0.6)] dark:shadow-[0_0_20px_rgba(129,140,248,0.5)] backdrop-blur-lg animate-fade-in-up transition-all duration-300" (click)="$event.stopPropagation()" [ngClass]="{ 'animate-shake': form?.submitted && form.invalid }">
+  <div class="relative w-full max-w-2xl bg-white dark:bg-gray-900/80 rounded-2xl border border-indigo-200 dark:border-indigo-700 shadow-lg backdrop-blur-lg animate-fade-in-up transition-all duration-300" (click)="$event.stopPropagation()" [ngClass]="{ 'animate-shake': form?.submitted && form.invalid }">
+    
+    <!-- Botón cerrar -->
     <button class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl transition" (click)="cerrarModalCrearProyecto()" aria-label="Cerrar">✕</button>
 
+    <!-- Mensajes de éxito y error -->
     <div *ngIf="mensajeExitoProyecto" class="mx-6 mt-4 mb-1 flex items-center gap-2 bg-emerald-100 dark:bg-emerald-800/40 text-emerald-700 dark:text-emerald-200 rounded-md p-3 shadow-sm animate-fade-in">
       <span class="material-icons text-base">check_circle</span>
       <span>¡Proyecto creado con éxito!</span>
@@ -149,14 +152,16 @@
       <span>Ocurrió un error al crear el proyecto.</span>
     </div>
 
+    <!-- Encabezado del modal -->
     <div class="px-6 pt-9 pb-3 border-b border-indigo-100 dark:border-indigo-500/40 flex items-center justify-start gap-2">
-      <span class="material-icons text-indigo-600 dark:text-indigo-400 text-xl -mt-4">add_circle</span>
-      <h2 class="text-lg font-bold text-gray-800 dark:text-white -mt-4 tracking-wide">Crear nuevo proyecto</h2>
+      <span class="material-icons text-indigo-600 dark:text-indigo-400 text-xl">add_circle</span>
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-white tracking-wide">Crear nuevo proyecto</h2>
     </div>
 
+    <!-- Formulario -->
     <form #form="ngForm" (ngSubmit)="enviarProyecto()" class="px-6 pt-4 pb-6 space-y-4">
-
-      <!-- Nombre -->
+      
+      <!-- Nombre del proyecto -->
       <div>
         <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 tracking-wide mb-1">Nombre del proyecto</label>
         <input name="nombre" [(ngModel)]="nuevoProyecto.nombre" required #nombre="ngModel"
@@ -192,11 +197,13 @@
 
       <!-- Botones -->
       <div class="flex justify-end gap-3 pt-2">
+        <!-- Botón cancelar -->
         <button type="button" (click)="cerrarModalCrearProyecto()"
                 class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition shadow-md font-medium">
           Cancelar
         </button>
 
+        <!-- Botón de crear proyecto -->
         <button type="submit"
                 [disabled]="form.invalid || enviandoProyecto"
                 class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold flex items-center gap-2 hover:bg-indigo-700 hover:ring-2 hover:ring-indigo-400 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
@@ -221,15 +228,13 @@
             </svg>
             <span class="ml-2">Enviando...</span>
           </ng-template>
-
-
         </button>
       </div>
-
 
     </form>
   </div>
 </div>
+
 
     <!-- MODAL DE ACTIVIDAD -->
  <div *ngIf="modalAbierto && actividadSel" class="fixed inset-0 z-50 flex items-center justify-center">  
@@ -272,7 +277,7 @@
         </table>
       </div>
   </div>
-<!-- ░░░░░░░░░░  MODALES DE PROYECTO  ░░░░░░░░░░ -->
+
 <!-- █ Modal DETALLE de proyecto -->
 <div *ngIf="modalProyectoAbierto && proyectoSel"
      class="fixed inset-0 z-50 flex items-center justify-center">
@@ -383,8 +388,6 @@
     </div>
   </div>
 </div>
-<!-- ░░░░░░░░░░  /MODALES  ░░░░░░░░░░ -->
-
 
    <!-- 🔐 MODAL LOGOUT -->
 <div *ngIf="showLogoutModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">

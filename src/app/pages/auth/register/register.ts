@@ -62,17 +62,19 @@ export class Register {
     this.loading = true;
     this.authService.register(payload).subscribe({
       next: (response) => {
+        console.log('Respuesta de backend:', response);
+
+        // Si la respuesta contiene el accessToken, lo guardamos en localStorage
+        if (response && response.accessToken) {
+          localStorage.setItem('accessToken', response.accessToken);
+          console.log('Token guardado en localStorage:', response.accessToken);  // Log para verificar
+        }
+
         this.successMessage = 'Registro exitoso';
         this.errorMessage = '';
         this.loading = false;
 
-        this.fullName = '';
-        this.email = '';
-        this.password = '';
-
-        console.log('Respuesta de backend:', response);
-
-        // Redirección con espera
+        // Redirigir al Dashboard
         setTimeout(() => {
           this.successMessage = '';
           this.router.navigate(['/dashboard']).then(navigated => {
@@ -80,7 +82,6 @@ export class Register {
           });
         }, 2000);
       },
-
       error: (error) => {
         this.errorMessage = error?.error?.detail || 'Error al registrar';
         this.successMessage = '';

@@ -92,8 +92,8 @@ export class Sidebar implements OnInit, OnDestroy {
     {
       section: 'Proyectos',
       items: [
-        { icon: 'folder', label: 'Mis Proyectos', link: '/proyectos' },
-        { icon: 'view_kanban', label: 'Kanban', link: '/proyectos/kanban' },
+        { icon: 'folder', label: 'Kanban_Proyectos', link: '/project_list' },
+        { icon: 'view_kanban', label: 'Kanban_HU', link: '/historia-usuario' },
         { icon: 'timeline', label: 'Gantt', link: '/proyectos/gantt' }
       ]
     },
