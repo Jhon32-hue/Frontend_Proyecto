@@ -3,17 +3,21 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RegisterRequest } from '../../interfaces/auth';
 import { Router } from '@angular/router';
-import { tap, catchError } from 'rxjs/operators'; 
+import { tap, catchError } from 'rxjs/operators';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthServices {
   private apiUrl: string = 'http://127.0.0.1:8000/api/usuarios/';
+  private invitacionUrl: string = 'http://127.0.0.1:8000/api/gestion-invitacion/';
 
   constructor(
     private readonly http: HttpClient,
     private readonly router: Router
   ) {}
+
+  // ─────────── AUTH BÁSICA ───────────
 
   login(emailFromParameter: string, passwordFromParameter: string): Observable<any> {
     const url = this.apiUrl + 'token/';
@@ -21,21 +25,18 @@ export class AuthServices {
     return this.http.post<any>(url, body);
   }
 
-  // Método register corregido para incluir almacenamiento del token en localStorage
   register(data: RegisterRequest): Observable<any> {
     const url = this.apiUrl + 'registro/';
     return this.http.post<any>(url, data).pipe(
       tap((response) => {
-        // Verifica que la respuesta contiene el token
         if (response && response.accessToken) {
           localStorage.setItem('accessToken', response.accessToken);
-          console.log('Token guardado en localStorage:', response.accessToken);  // Log para verificar
+          console.log('Token guardado en localStorage:', response.accessToken);
         }
       }),
       catchError((error) => {
-        // Manejo de errores
         console.error('Error al registrar:', error);
-        throw error; // Re-lanzamos el error para que el componente lo maneje
+        throw error;
       })
     );
   }
@@ -69,17 +70,36 @@ export class AuthServices {
     }
   }
 
-  aceptarInvitacion(participacion: string, token: string, uid: string): Observable<any> {
-  const url = `http://127.0.0.1:8000/api/gestion-invitacion/`;
-  const params = {
-    participacion,
-    token,
-    uid  
-  };
+  // ─────────── GESTIÓN DE INVITACIONES ───────────
 
-  return this.http.post<any>(url, {}, {
-    params,
-    headers: {}  // no Authorization
-  });
-}
+  /**
+   * Verifica si la invitación es válida y si el usuario está activo o no.
+   */
+  verificarInvitacion(uid: string, participacion: string, token: string): Observable<any> {
+    const params = { uid, participacion, token };
+    return this.http.get<any>(this.invitacionUrl, { params });
+  }
+
+  /**
+   * Acepta la invitación si el usuario ya está registrado y activo.
+   */
+  aceptarInvitacion(participacion: string, token: string, uid: string): Observable<any> {
+    const params = { uid, participacion, token };
+    return this.http.post<any>(this.invitacionUrl, {}, { params });
+  }
+
+  /**
+   * Acepta la invitación si el usuario está inactivo (completa nombre y contraseña).
+   */
+  aceptarInvitacionConDatos(
+    uid: string,
+    participacion: string,
+    token: string,
+    nombre_completo: string,
+    password: string
+  ): Observable<any> {
+    const params = { uid, participacion, token };
+    const body = { nombre_completo, password };
+    return this.http.post<any>(this.invitacionUrl, body, { params });
+  }
 }
