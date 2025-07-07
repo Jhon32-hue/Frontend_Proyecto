@@ -1,0 +1,27 @@
+.bubble {
+  position: fixed;
+  border-radius: 9999px;
+  opacity: 0.4;
+  filter: blur(100px);
+  z-index: 0;
+  pointer-events: none;
+  transition: transform 0.3s ease-in-out;
+}
+
+.bubble-big {
+  width: 300px;
+  height: 300px;
+}
+
+.bubble-tiny {
+  width: 120px;
+  height: 120px;
+}
+
+.bubble-1 { top: 5%; left: 10%; }
+.bubble-2 { bottom: 10%; right: 5%; }
+.bubble-3 { top: 20%; right: 30%; }
+.bubble-4 { bottom: 25%; left: 15%; }
+.bubble-5 { top: 45%; left: 45%; }
+.bubble-6 { bottom: 5%; right: 25%; }
+.bubble-center { top: 50%; left: 50%; transform: translate(-50%, -50%); }

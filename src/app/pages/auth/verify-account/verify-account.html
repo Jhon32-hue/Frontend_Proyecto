@@ -1,1 +1,111 @@
-<p>verify-account works!</p>
+<div class="bg-wrapper min-h-screen flex items-center justify-center px-4 md:px-8 xl:px-24 2xl:px-32 transition-all"
+     [ngClass]="darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'">
+
+  <!-- 🌌 Burbujas decorativas -->
+  <div class="bubble bubble-big bubble-1 bg-gradient-to-tr from-indigo-300 via-purple-400 to-blue-500"></div>
+  <div class="bubble bubble-big bubble-2 bg-gradient-to-tr from-pink-400 via-fuchsia-500 to-purple-500"></div>
+  <div class="bubble bubble-tiny bubble-3 bg-gradient-to-tr from-cyan-300 via-sky-400 to-indigo-400"></div>
+  <div class="bubble bubble-tiny bubble-4 bg-gradient-to-tr from-blue-300 via-indigo-400 to-violet-500"></div>
+  <div class="bubble bubble-tiny bubble-5 bg-gradient-to-tr from-fuchsia-300 via-pink-400 to-purple-400"></div>
+  <div class="bubble bubble-tiny bubble-6 bg-gradient-to-tr from-purple-300 via-indigo-400 to-blue-400"></div>
+  <div class="bubble bubble-big bubble-center bg-gradient-to-br from-indigo-300 via-blue-400 to-purple-400"></div>
+
+  <!-- 🌙 Switch modo oscuro -->
+  <label class="fixed top-4 right-4 z-50 flex items-center cursor-pointer">
+    <input type="checkbox" class="sr-only" [checked]="darkMode" (change)="toggleDarkMode()" />
+    <div class="w-14 h-8 flex items-center bg-gray-300 dark:bg-gray-700 rounded-full p-1 duration-300 shadow-inner transition-all">
+      <div class="dot w-6 h-6 bg-white dark:bg-indigo-400 rounded-full shadow-md transform transition-transform duration-300" [ngClass]="darkMode ? 'translate-x-6' : 'translate-x-0'"></div>
+    </div>
+    <div class="ml-3 text-sm">
+      <svg *ngIf="darkMode; else sunIcon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
+      </svg>
+      <ng-template #sunIcon>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M6.05 6.05L4.636 4.636m0 14.728l1.414-1.414M18.364 5.636l-1.414 1.414M12 8a4 4 0 100 8 4 4 0 000-8z" />
+        </svg>
+      </ng-template>
+    </div>
+  </label>
+  
+<!-- 💳 Tarjeta de confirmación -->
+<div class="relative w-5xl max-w-6xl mx-auto rounded-3xl overflow-hidden border border-indigo-600 dark:border-white shadow-xl backdrop-blur-xl transition-all flex flex-col lg:flex-row">
+
+  <!-- 🎨 Ilustración izquierda -->
+  <div class="hidden lg:flex lg:w-1/2 bg-blue-500 items-center justify-center px-12 xl:px-16 py-10">
+    <div class="text-center max-w-xl">
+      <h2 class="mb-4 text-white text-2xl font-extrabold drop-shadow-[2px_2px_4px_rgba(0,0,0,0.8)]">
+        ¡Estás a un paso de colaborar!
+      </h2>
+      <img
+        src="invitación(3).png"
+        alt="Ilustración colaboración"
+        class="w-full h-auto max-h-60 object-contain mx-auto rounded-2xl drop-shadow-[2px_2px_4px_rgba(0,0,0,0.8)] transition-transform duration-300 hover:scale-105" />
+      <p class=" w-full mt-3 text-white/90 text-base leading-relaxed drop-shadow-[2px_2px_4px_rgba(0,0,0,0.8)]">
+        Acepta tu invitación y únete a una nueva forma de trabajar en equipo con 
+        <span class="text-xl font-semibold text-indigo-800 dark:text-white drop-shadow-[2px_2px_2px_rgba(255,255,255,0.6)]">
+            Taskly
+        </span>
+      </p> 
+    </div>
+  </div>
+
+  <!-- ✅ Confirmación de invitación -->
+  <div class="-mb-25 relative w-full lg:w-1/2 px-6 md:px-10 xl:px-12 py-6 bg-white dark:bg-gray-900 flex items-center justify-center animate-fade-in-down">
+    <app-logo-taskly class="absolute top-6 right-6 lg:right-10 z-20"></app-logo-taskly>
+
+    <div class="w-full max-w-md">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white -mt-11 mb-6">
+        {{ successMessage ? '¡Todo listo!' : 'Aceptar invitación' }}
+      </h1>
+
+      <p *ngIf="!successMessage" class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+        Has sido invitado a un proyecto. Confirma tu participación para empezar a colaborar.
+      </p>
+
+      <!-- 🚨 Error -->
+      <div *ngIf="errorMessage"
+           class="mb-4 text-sm text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-800/30 border border-red-300 dark:border-red-600 px-4 py-3 rounded-lg">
+        {{ errorMessage }}
+      </div>
+
+      <!-- ✅ Éxito -->
+      <div *ngIf="successMessage"
+           class="mb-4 text-sm text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-800/30 border border-green-300 dark:border-green-600 px-4 py-3 rounded-lg">
+        {{ successMessage }}
+      </div>
+
+      <button *ngIf="!successMessage"
+              (click)="aceptarInvitacion()"
+              [disabled]="loading"
+              class=" mb-6 w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition duration-200 transform hover:-translate-y-0.5 disabled:opacity-60">
+        <svg *ngIf="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+             viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        </svg>
+        <span>{{ loading ? 'Procesando...' : 'Aceptar invitación' }}</span>
+      </button>
+
+      <p class="text-center text-xs text-gray-400 dark:text-gray-500 mt-4">
+        Si no reconoces esta invitación, puedes ignorar este mensaje.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Spinner de pantalla completa opcional (overlay) -->
+  <div *ngIf="loading"
+       class="fixed inset-0 bg-black/40 dark:bg-black/60 flex items-center justify-center z-50">
+    <svg class="animate-spin h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+         viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+    </svg>
+  </div>
+
+</div>

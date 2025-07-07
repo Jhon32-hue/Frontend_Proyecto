@@ -7,6 +7,8 @@ import { guestGuard } from './Guards/guest-guard';
 import { ProjectList } from './pages/projects/project-list/project-list';
 import { strictProjectGuard } from './Guards/strict-project-guard-guard';
 import { HistoriaUsuario } from './pages/historia-usuario/historia-usuario';
+import { KanbanHu } from './component/kanban-hu/kanban-hu';
+import { VerifyAccount } from './pages/auth/verify-account/verify-account';
 
 export const routes: Routes = [
   {
@@ -33,6 +35,15 @@ export const routes: Routes = [
     path: 'historia-usuario',
     component: HistoriaUsuario,
     canActivate: [strictProjectGuard]  
-  }
+  },
+  {
+  path: 'historia-usuario/:id/hu',
+  component: HistoriaUsuario,
+  canActivate: [strictProjectGuard]
+},
+{
+  path: 'verify-account',
+  component: VerifyAccount,
+},
 
 ];

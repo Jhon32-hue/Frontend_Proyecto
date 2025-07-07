@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthServices } from '../../services/Auth/auth';
 import { Sincronizacion } from '../../services/sincronizacion';
 import { Subscription } from 'rxjs';
+import { ModalService } from '../../services/Modal/modal-service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,10 +14,12 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./sidebar.css'],
 })
 export class Sidebar implements OnInit, OnDestroy {
+
   constructor(
     private authService: AuthServices,
     private router: Router,
-    private sincronizacion: Sincronizacion
+    private sincronizacion: Sincronizacion,
+    private modalService: ModalService
   ) {
     this.checkMobile();
   }
@@ -33,18 +36,16 @@ export class Sidebar implements OnInit, OnDestroy {
   private themeSubscription!: Subscription;
 
   @Output() sidebarToggled = new EventEmitter<boolean>();
+  @Output() mostrarModalSeleccionProyecto = new EventEmitter<void>();  // Emite evento para mostrar modal
 
   ngOnInit(): void {
-  this.darkMode = this.sincronizacion.getDarkMode(); // ⚡ Esto usa directamente el valor actual del servicio
+    this.darkMode = this.sincronizacion.getDarkMode();
+    document.documentElement.classList.toggle('dark', this.darkMode);
 
-  // Aplica la clase al DOM si inicia manualmente (respaldo)
-  document.documentElement.classList.toggle('dark', this.darkMode);
-
-  this.themeSubscription = this.sincronizacion.darkMode$.subscribe((modoOscuro) => {
-    this.darkMode = modoOscuro;
-  });
-}
-
+    this.themeSubscription = this.sincronizacion.darkMode$.subscribe((modoOscuro) => {
+      this.darkMode = modoOscuro;
+    });
+  }
 
   ngOnDestroy(): void {
     this.themeSubscription?.unsubscribe();
@@ -57,13 +58,8 @@ export class Sidebar implements OnInit, OnDestroy {
 
   private checkMobile() {
     this.isMobileView = window.innerWidth <= 768;
-    if (this.isMobileView) {
-      this.isSidebarVisibleOnMobile = false;
-      this.isOpen = false;
-    } else {
-      this.isSidebarVisibleOnMobile = false;
-      this.isOpen = true;
-    }
+    this.isSidebarVisibleOnMobile = false;
+    this.isOpen = !this.isMobileView;
     this.sidebarToggled.emit(this.isOpen);
   }
 
@@ -76,10 +72,10 @@ export class Sidebar implements OnInit, OnDestroy {
     }
     this.sidebarToggled.emit(this.isOpen);
   }
-  isActiveRoute(route: string): boolean {
-  return this.router.url.includes(route);
-}
 
+  isActiveRoute(route: string): boolean {
+    return this.router.url.includes(route);
+  }
 
   groupedMenu = [
     {
@@ -93,7 +89,7 @@ export class Sidebar implements OnInit, OnDestroy {
       section: 'Proyectos',
       items: [
         { icon: 'folder', label: 'Kanban_Proyectos', link: '/project_list' },
-        { icon: 'view_kanban', label: 'Kanban_HU', link: '/historia-usuario' },
+        { icon: 'view_kanban', label: 'Kanban_HU', link: '/historia-usuario' },  
         { icon: 'timeline', label: 'Gantt', link: '/proyectos/gantt' }
       ]
     },
@@ -184,4 +180,14 @@ export class Sidebar implements OnInit, OnDestroy {
   cancelarLogout() {
     this.showLogoutModal = false;
   }
+
+  abrirKanbanHU(): void {
+  const proyectoId = localStorage.getItem('proyectoIdSeleccionado');
+  if (proyectoId) {
+    this.router.navigate(['/historia-usuario', proyectoId, 'hu']);
+  } else {
+    this.router.navigate(['/historia-usuario']);  // Navega SIEMPRE para cargar el componente
+  }
+}
+
 }

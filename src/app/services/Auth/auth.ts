@@ -3,13 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RegisterRequest } from '../../interfaces/auth';
 import { Router } from '@angular/router';
-import { tap, catchError } from 'rxjs/operators'; // Importa tap y catchError
-
+import { tap, catchError } from 'rxjs/operators'; 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthServices {
-  private apiUrl: string = 'http://127.0.0.1:8000/api/usuarios/'; // Asegúrate de que esta URL sea la correcta
+  private apiUrl: string = 'http://127.0.0.1:8000/api/usuarios/';
 
   constructor(
     private readonly http: HttpClient,
@@ -69,4 +68,18 @@ export class AuthServices {
       return null;
     }
   }
+
+  aceptarInvitacion(participacion: string, token: string, uid: string): Observable<any> {
+  const url = `http://127.0.0.1:8000/api/gestion-invitacion/`;
+  const params = {
+    participacion,
+    token,
+    uid  
+  };
+
+  return this.http.post<any>(url, {}, {
+    params,
+    headers: {}  // no Authorization
+  });
+}
 }
