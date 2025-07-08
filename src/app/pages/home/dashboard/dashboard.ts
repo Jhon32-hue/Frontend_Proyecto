@@ -257,4 +257,15 @@ ngOnInit() {
     }
     return 'pt-24';
   }
+
+
+tipoAccion(accion: string): 'crear' | 'editar' | 'eliminar' | 'otro' {
+  if (!accion) return 'otro';
+  const acc = accion.toLowerCase();
+  if (acc.includes('crear')) return 'crear';
+  if (acc.includes('editar') || acc.includes('modificar')) return 'editar';
+  if (acc.includes('eliminar') || acc.includes('borrar')) return 'eliminar';
+  return 'otro';
+}
+
 }

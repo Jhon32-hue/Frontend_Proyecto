@@ -144,4 +144,16 @@ scrollHorizontal(direction: 'left' | 'right') {
       otro: 'bg-indigo-100 text-indigo-700',
     }[this.tipoAccion(acc)];
   }
+
+  scrollActividad(direccion: 'prev' | 'next') {
+  const contenedor = document.getElementById('scrollActividad');
+  if (contenedor) {
+    const scrollAmount = 300;
+    contenedor.scrollBy({
+      left: direccion === 'next' ? scrollAmount : -scrollAmount,
+      behavior: 'smooth'
+    });
+  }
+}
+
 }

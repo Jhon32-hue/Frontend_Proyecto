@@ -8,7 +8,7 @@ import { ModalService } from '../../services/Modal/modal-service';
 import { DevloperService } from '../../services/developers_proyectos/developer-service';
 
 interface Developer {
-  id: number;
+  participacion_id: number;
   nombre: string;
   rol: string;
 }
@@ -97,15 +97,17 @@ export class KanbanHu implements OnInit, OnChanges {
 
     this.developerService.obtenerDevelopersPorProyecto(this.proyectoId).subscribe({
       next: (res) => {
-        this.developers = res
-        .filter(p => p.usuario && p.usuario.id)  // ❗️ Verifica que usuario exista
-        .map(p => ({
-          id: p.usuario.id,
-          nombre: p.usuario.nombre,
-          rol: p.usuario.rol
-        }));
+        console.log('📦 Participaciones crudas:', res);
 
-        console.log('👨‍💻 Developers cargados:', this.developers);
+        this.developers = res
+          .filter(p => p.id_usuario && p.id_usuario.id)
+          .map(p => ({
+            participacion_id: p.id_participacion,                      // ID que espera el backend
+            nombre: p.id_usuario.nombre_completo,                      // Nombre visible
+            rol: p.id_rol.nombre_rol                                   // Rol visible
+          }));
+
+        console.log('👨‍💻 Developers formateados:', this.developers);
       },
       error: (err) => console.error('❌ Error al obtener developers:', err)
     });
@@ -145,8 +147,13 @@ export class KanbanHu implements OnInit, OnChanges {
 
     const payload: Partial<HistoriaUsuario> = {
       ...this.nuevaHU,
-      proyecto: this.proyectoId
+      proyecto: this.proyectoId,
+      participacion_asignada: this.nuevaHU.participacion_asignada 
+        ? Number(this.nuevaHU.participacion_asignada) 
+        : null
     };
+
+    console.log('📤 Payload a enviar:', payload); // 👈 Esto es clave
 
     this.huService.create(payload).subscribe({
       next: (res) => {
@@ -154,9 +161,17 @@ export class KanbanHu implements OnInit, OnChanges {
         this.historias.push(res);
         this.cerrarModalCrearHU();
       },
-      error: (err) => console.error('❌ Error al crear historia:', err)
+      error: (err) => {
+        console.error('❌ Error al crear historia:', err);
+        if (err.error?.non_field_errors) {
+          console.warn('⚠️ Validación:', err.error.non_field_errors);
+        } else if (err.error) {
+          console.warn('⚠️ Detalles del error:', err.error);
+        }
+      }
     });
   }
+
 
   obtenerProgresoMock(estado: EstadoHu | string): number {
   switch (estado) {

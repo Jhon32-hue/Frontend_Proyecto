@@ -1,34 +1,46 @@
-<!-- 📦 ACTIVIDAD RECIENTE (mejorado) -->
+<!-- 📦 ACTIVIDAD RECIENTE -->
 <div class="relative w-full p-6 rounded-3xl border border-gray-200 dark:border-white/10 bg-white/90 dark:bg-white/5 backdrop-blur-xl shadow-xl group transition-all py-1">
-  <!-- Glow externo -->
+
+  <!-- 💠 Glow externo -->
   <div class="absolute inset-0 rounded-3xl bg-gradient-to-br from-sky-100/40 to-transparent blur-xl opacity-40 pointer-events-none group-hover:opacity-70 transition-all duration-500"></div>
 
-  <!-- Encabezado -->
-  <div class="relative pb-5 border-b border-gray-200 dark:border-white/10 z-10">
-    <div class="flex justify-between items-center">
-      <h2 class="mt-4 text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-        <div class="bg-sky-100 dark:bg-sky-800 text-sky-600 dark:text-sky-300 p-2 rounded-full shadow-sm">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M3 4h18M3 10h18M3 16h18" />
-          </svg>
-        </div>
-        Actividad reciente
-      </h2>
+  <!-- Encabezado + Botones Scroll -->
+  <div class="relative pb-5 border-b border-gray-200 dark:border-white/10 z-10 flex justify-between items-center">
+    <h2 class="mt-4 text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+      <div class="bg-sky-100 dark:bg-sky-800 text-sky-600 dark:text-sky-300 p-2 rounded-full shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3 4h18M3 10h18M3 16h18" />
+        </svg>
+      </div>
+      Actividad reciente
+    </h2>
+
+    <!-- Botones de scroll con flechas visibles -->
+    <div class="flex gap-2 items-center mt-4 sm:mt-0">
+      <button (click)="scrollActividad('prev')"
+        class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-sky-600 text-white flex items-center justify-center shadow hover:scale-105 hover:shadow-md transition">
+        <i class="ri-arrow-left-s-line text-xl"></i>
+      </button>
+      <button (click)="scrollActividad('next')"
+        class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-sky-600 text-white flex items-center justify-center shadow hover:scale-105 hover:shadow-md transition">
+        <i class="ri-arrow-right-s-line text-xl"></i>
+      </button>
     </div>
   </div>
 
-  <!-- Cargando -->
+  <!-- 💡 Cargando -->
   <div *ngIf="loading" class="text-gray-500 dark:text-gray-400 text-sm italic mt-4 z-10 relative">
     Cargando actividad...
   </div>
 
-  <!-- Sin actividad -->
+  <!-- ❌ Sin actividad -->
   <p *ngIf="!loading && !actividadesCombinadas().length" class="text-gray-400 dark:text-gray-500 italic mt-4 z-10 relative">
     No hay actividad reciente.
   </p>
 
-  <!-- Tarjetas -->
-  <div *ngIf="!loading && actividadesCombinadas().length" class="overflow-x-auto -mx-2 px-2 relative z-10 mt-4">
+  <!-- 🧾 Tarjetas -->
+  <div *ngIf="!loading && actividadesCombinadas().length" id="scrollActividad" class="overflow-x-auto -mx-2 px-2 relative z-10 mt-4">
+    
     <div class="flex gap-6 pb-4 snap-x snap-mandatory custom-scrollbar scroll-smooth">
       <div *ngFor="let a of actividadesCombinadas().slice(0, 10); let i = index"
            (click)="abrirModal(a)"
@@ -41,7 +53,7 @@
         <!-- Glow interno -->
         <div class="absolute -inset-[1px] rounded-xl bg-gradient-to-br from-white/10 to-transparent blur-md opacity-20 pointer-events-none transition"></div>
 
-        <!-- Encabezado -->
+        <!-- Contenido -->
         <div class="flex justify-between items-start mb-2 z-10 relative">
           <p class="text-[15px] font-semibold truncate w-44"
              [ngClass]="{
@@ -51,7 +63,7 @@
             {{ a.nombre_proyecto }}
           </p>
 
-          <!-- Icono de acción -->
+          <!-- Ícono de acción -->
           <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs shadow-md"
                [ngClass]="{
                  'bg-emerald-500': tipoAccion(a.accion_realizada) === 'crear',
@@ -59,18 +71,10 @@
                  'bg-rose-500': tipoAccion(a.accion_realizada) === 'eliminar',
                  'bg-sky-500': tipoAccion(a.accion_realizada) === 'otro'
                }">
-            <svg *ngIf="tipoAccion(a.accion_realizada) === 'crear'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
-            <svg *ngIf="tipoAccion(a.accion_realizada) === 'editar'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M16.5 3.5l4 4L7 21l-4 1 1-4L16.5 3.5z" />
-            </svg>
-            <svg *ngIf="tipoAccion(a.accion_realizada) === 'eliminar'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M3 6h18M8 6v14M16 6v14" />
-            </svg>
-            <svg *ngIf="tipoAccion(a.accion_realizada) === 'otro'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" /><path d="M12 8v4l2 2" />
-            </svg>
+            <i *ngIf="tipoAccion(a.accion_realizada) === 'crear'" class="ri-add-line text-[13px]"></i>
+            <i *ngIf="tipoAccion(a.accion_realizada) === 'editar'" class="ri-pencil-line text-[13px]"></i>
+            <i *ngIf="tipoAccion(a.accion_realizada) === 'eliminar'" class="ri-delete-bin-7-line text-[13px]"></i>
+            <i *ngIf="tipoAccion(a.accion_realizada) === 'otro'" class="ri-information-line text-[13px]"></i>
           </div>
         </div>
 
@@ -85,7 +89,7 @@
           {{ a.accion_realizada }}
         </p>
 
-        <!-- Mensaje de advertencia -->
+        <!-- Advertencia -->
         <p *ngIf="a.accion_realizada === 'Proyecto eliminado permanentemente'"
            class="text-[12px] text-red-600 dark:text-red-400 italic mt-1 z-10 relative">
           Este proyecto fue eliminado y ya no está disponible.

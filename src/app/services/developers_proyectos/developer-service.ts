@@ -2,14 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-interface Participacion {
-  id: number;
-  usuario: {
+export interface Participacion {
+  id_participacion: number;
+  id_usuario: {
     id: number;
-    nombre: string;
-    rol: string;  
+    nombre_completo: string;
+    email: string;
+  };
+  id_rol: {
+    nombre_rol: string;
+    
   };
 }
+
 
 @Injectable({
   providedIn: 'root'

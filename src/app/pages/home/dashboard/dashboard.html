@@ -6,8 +6,8 @@
   class="fixed top-0 left-0 w-full h-16 z-30 bg-white dark:bg-gray-900 shadow-md border-b border-gray-200 dark:border-white/10"
 ></app-header>
 
-<!-- 🌐 LAYOUT -->
-<div class="flex flex-col lg:flex-row min-h-screen bg-gray-200/40 dark:bg-[#1f202a] pt-16">
+<div class="flex flex-col lg:flex-row min-h-screen pt-16 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 dark:from-[#1f202a] dark:via-[#202231] dark:to-[#1b1c26]">
+
   <!-- 📚 SIDEBAR -->
   <app-sidebar
     [ngClass]="{
@@ -18,154 +18,176 @@
     (sidebarToggled)="onSidebarToggle($event)"
     class="transition-all duration-300 h-[calc(100vh-4rem)] overflow-y-auto bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-white/10"
   ></app-sidebar>
-  
-  
-<div
-  [ngClass]="[
-    screenSize === 'lg' ? (isSidebarOpen ? 'lg:ml-[20rem]' : 'lg:ml-[5rem]') : 'ml-0',
-    'w-full',
-    'px-4 sm:px-6 md:px-6 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24 4xl:px-28',
-    'py-10 space-y-12',
-    'mx-auto',
-    'max-w-none lg:max-w-[96%] 2xl:max-w-[94%] 4xl:max-w-[90%]',
-    'transition-all duration-300 ease-in-out'
-  ]"
->
-  <h2 class="text-4xl font-bold text-gray-800 dark:text-white mt-6 mb-9">Dashboard</h2>
 
-  <!-- 🌟 BIENVENIDA + STATS -->
-  <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-    <div class="md:col-span-2 xl:col-span-3">
-      <!-- Tarjeta de bienvenida -->
-      <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
-                  bg-gradient-to-br from-[#dbeafe] via-[#ede9fe] to-[#e0f2fe] dark:from-[#373e68] dark:via-[#4c4e80] dark:to-[#35546f] 
-                  text-black dark:text-white shadow-xl hover:shadow-2xl hover:scale-[1.02] 
-                  hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
-        <div class="space-y-4 relative z-10">
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight break-words">¡Hola, {{ nombreCompleto || 'Usuario' }}!</h2>
-          <p class="text-sm sm:text-base text-black dark:text-gray-200 max-w-md font-medium">
-            Continúa con tus tareas y revisa tus avances del día.
-          </p>
-          <button class="mt-6 px-6 py-2.5 bg-white text-indigo-700 rounded-xl font-semibold text-sm shadow-lg">
-            Ver actividades
-          </button>
-        </div>
-        <img src="wmremove-transformed.png" class="absolute -bottom-8 right-1 w-52 sm:w-64 md:w-72 opacity-90 hidden sm:block" />
-        <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-sky-100/40 to-transparent blur-md opacity-60 pointer-events-none group-hover:opacity-90 transition"></div>
-      </div>
-    </div>
+  <!-- 📦 CONTENEDOR PRINCIPAL -->
+  <div class="w-full flex flex-col lg:flex-row gap-4 px-2">
 
-    <div>
-      <!-- Tarjeta de usuario -->
-      <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
-                  bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
-                  hover:ring-2 hover:ring-indigo-400 transition-all duration-300 overflow-hidden">
-        <div class="text-center space-y-4 relative z-10">
-          <img src="assets/avatar.png" class="w-16 h-16 rounded-full mx-auto shadow-md border border-gray-300 dark:border-white/10" />
-          <h3 class="font-semibold text-lg text-gray-800 dark:text-white tracking-tight">Jason</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-300 font-medium">32% completado</p>
-          <div class="w-full bg-gray-200 dark:bg-white/10 h-2 rounded-full">
-            <div class="bg-indigo-500 h-2 rounded-full" style="width: 32%"></div>
+    <!-- 🧠 MAIN - Reacciona al Sidebar -->
+    <main
+      [ngClass]="[
+        screenSize === 'lg' ? (isSidebarOpen ? 'lg:ml-[16rem]' : 'lg:ml-[5rem]') : 'ml-0',
+        'w-full px-4 sm:px-6 md:px-10 xl:px-14 2xl:px-16 py-12 space-y-14 transition-all duration-300 ease-in-out'
+      ]"
+      class="text-gray-800 dark:text-white lg:w-2/3 xl:w-3/4"
+    >
+      <!-- TÍTULO -->
+      <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Dashboard</h2>
+
+      <!-- BIENVENIDA -->
+      <section>
+        <div class="p-8 bg-gradient-to-tr from-indigo-500 to-sky-600 rounded-3xl shadow-2xl text-white flex flex-col sm:flex-row justify-between items-center gap-6 h-60 sm:h-72 md:h-80">
+          <div class="space-y-3 text-center sm:text-left">
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">Bienvenido</h1>
+            <p class="text-sm sm:text-base text-indigo-100 max-w-md font-medium">
+              Organiza tus proyectos, tareas y actividades del día de manera eficiente.
+            </p>
           </div>
-          <p class="mt-2 text-xs text-gray-500 dark:text-gray-300">21–30 Ago</p>
+          <img src="wmremove-transformed.png" alt="hero" class="h-90 max-h-90 drop-shadow-lg hidden sm:block" />
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- 📺 ACTIVIDAD + CONTACTOS -->
-  <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-    <div class="md:col-span-2 xl:col-span-2">
-      <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
-                  bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
-                  hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
-        <app-actividad class="no-hover" (actividadSeleccionada)="abrirModalDesdeDashboard($event)"></app-actividad>
-      </div>
-    </div>
-    <div>
-      <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
-                  bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
-                  hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
-        <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-200 dark:border-white/10 z-10">
-          <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-600 dark:text-gray-300">Tus contactos</h3>
-          <span class="text-indigo-600 text-xs font-medium">Ver todos</span>
+      <!-- ACTIVIDAD -->
+      <section>
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-white mb-3">Actividad reciente</h3>
+        <div class="bg-white dark:bg-[#2b2d3c] p-6 rounded-3xl shadow-2xl border border-gray-200 dark:border-white/10 hover:shadow-2xl transition-all duration-300">
+          <app-actividad (actividadSeleccionada)="abrirModalDesdeDashboard($event)"></app-actividad>
         </div>
-        <div class="space-y-4 z-10 relative">
-          <div *ngFor="let contacto of contactos" class="flex items-center justify-between p-2 rounded">
-            <div class="flex items-center gap-3">
-              <img [src]="contacto.avatar" class="w-9 h-9 rounded-full border border-gray-300 dark:border-white/10 shadow-sm" />
-              <div>
-                <p class="text-sm font-medium text-gray-800 dark:text-white leading-tight">{{ contacto.nombre }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">{{ contacto }}</p>
+      </section>
+
+      <!-- TAREAS + PROYECTOS -->
+      <section>
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-white mb-3 mt-4">Tareas y Proyectos</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <div class="xl:col-span-1 bg-white dark:bg-[#2b2d3c] p-6 rounded-3xl shadow-xl border border-gray-200 dark:border-white/10 hover:shadow-2xl transition-all duration-300">
+            <app-today-tasks></app-today-tasks>
+          </div>
+          <div class="xl:col-span-3 bg-white dark:bg-[#2b2d3c] p-6 rounded-3xl shadow-xl border border-gray-200 dark:border-white/10 hover:shadow-2xl transition-all duration-300">
+            <app-proyectos (proyectoSeleccionado)="abrirModalDesdeProyectos($event)"></app-proyectos>
+          </div>
+        </div>
+      </section>
+
+      <!-- CALENDARIO -->
+      <section>
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-white mb-3 mt-4">Calendario</h3>
+        <div class="bg-white dark:bg-[#2b2d3c] p-6 rounded-3xl shadow-xl border border-gray-200 dark:border-white/10 hover:shadow-2xl transition-all duration-300">
+          <app-calendar-panel></app-calendar-panel>
+        </div>
+      </section>
+    </main>
+
+    <!-- 👤 PERFIL + CONTACTOS - FIJO -->
+    <aside class="w-full lg:w-[21rem] xl:w-[24rem] px-2 py-12 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto transition-all">
+      <div class="bg-white dark:bg-[#2b2d3c] p-6 rounded-3xl shadow-2xl hover:shadow-2xl border border-gray-200 dark:border-white/10 transition-all duration-300 space-y-20 mt-15">
+
+        <!-- PERFIL -->
+        <div class="text-center space-y-4">
+          <div class="relative w-24 h-24 mx-auto">
+            <img src="https://i.pravatar.cc/100?img=68"
+              class="rounded-full w-24 h-24 shadow-lg border-4 border-white dark:border-[#2b2d3c]" />
+            <div class="absolute bottom-0 right-0 bg-indigo-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
+              32%
+            </div>
+          </div>
+          <h3 class="font-semibold text-lg text-gray-800 dark:text-white">¡Buen día, Jason! 🔥</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-300 font-medium">Sigue aprendiendo para alcanzar tu objetivo</p>
+
+          <!-- Indicadores -->
+          <div class="flex justify-center gap-4 pt-2">
+            <div class="relative w-14 h-14">
+              <svg class="absolute top-0 left-0 w-14 h-14">
+                <circle cx="28" cy="28" r="24" stroke="#e5e7eb" stroke-width="4" fill="none" />
+                <circle cx="28" cy="28" r="24" stroke="#6366f1" stroke-width="4" fill="none"
+                        stroke-dasharray="150" stroke-dashoffset="45"
+                        stroke-linecap="round" class="animate-pulse" />
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+                70%
               </div>
             </div>
-            <span class="text-indigo-600 text-sm font-medium">Chatear</span>
+            <div class="relative w-14 h-14">
+              <svg class="absolute top-0 left-0 w-14 h-14">
+                <circle cx="28" cy="28" r="24" stroke="#e5e7eb" stroke-width="4" fill="none" />
+                <circle cx="28" cy="28" r="24" stroke="#22c55e" stroke-width="4" fill="none"
+                        stroke-dasharray="150" stroke-dashoffset="60"
+                        stroke-linecap="round" class="animate-pulse" />
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center text-xs font-semibold text-green-500 dark:text-green-400">
+                60%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-t border-gray-200 dark:border-white/10">
+
+        <!-- MENTORES -->
+        <div>
+          <h4 class="text-sm font-semibold uppercase tracking-widest text-gray-600 dark:text-gray-300 mb-4">Tus mentores</h4>
+          <div *ngFor="let contacto of contactos"
+               class="flex items-center justify-between p-2 rounded hover:bg-indigo-50 dark:hover:bg-white/10 transition">
+            <div class="flex items-center gap-3">
+              <img [src]="contacto.avatar || 'https://i.pravatar.cc/50?u=' + contacto.nombre"
+                   class="w-9 h-9 rounded-full border border-gray-300 dark:border-white/10 shadow-sm" />
+              <div>
+                <p class="text-sm font-medium text-gray-800 dark:text-white">{{ contacto.nombre }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 truncate w-32">Mentor</p>
+              </div>
+            </div>
+            <button
+              class="text-indigo-600 text-sm font-medium px-3 py-1 border border-indigo-300 rounded-full hover:ring-2 hover:scale-105 hover:bg-indigo-100 dark:hover:bg-white/10 transition duration-200">
+              Seguir
+            </button>
+          </div>
+          <div class="text-center mt-4">
+            <a href="#" class="text-xs font-medium text-indigo-600 hover:underline hover:opacity-90">Ver todos</a>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </aside>
 
-  <!-- 📋 TAREAS + PROYECTOS -->
-  <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
-                  bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
-                  hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
-        <app-today-tasks class="no-hover"></app-today-tasks>
-      </div>
-    </div>
-    <div>
-      <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
-                  bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
-                  hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
-        <app-proyectos class="no-hover" (proyectoSeleccionado)="abrirModalDesdeProyectos($event)"></app-proyectos>
-      </div>
-    </div>
-  </section>
-
-  <!-- 🗓 CALENDARIO -->
-  <section class="mt-6">
-    <div class="relative group p-6 rounded-3xl border border-gray-200 dark:border-white/10 
-                bg-white dark:bg-[#2b2d3c] shadow-xl hover:shadow-2xl hover:scale-[1.02] 
-                hover:ring-2 hover:ring-sky-400 transition-all duration-300 overflow-hidden">
-      <app-calendar-panel class="no-hover"></app-calendar-panel>
-    </div>
-  </section>
+  </div>
+</div>
 
 
 <!-- ✅ MODAL CREAR NUEVO PROYECTO -->
-<div *ngIf="modalCrearProyecto" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md px-4 py-8">
-  <div class="relative w-full max-w-2xl bg-white dark:bg-gray-900/80 rounded-2xl border border-indigo-200 dark:border-indigo-700 shadow-lg backdrop-blur-lg animate-fade-in-up transition-all duration-300" (click)="$event.stopPropagation()" [ngClass]="{ 'animate-shake': form?.submitted && form.invalid }">
-    
+<div *ngIf="modalCrearProyecto" class="fixed inset-0 z-50 flex items-center justify-center px-4 py-10 bg-black/40 backdrop-blur-md">
+  <!-- Fondo blur -->
+  <div class="absolute inset-0" (click)="cerrarModalCrearProyecto()"></div>
+
+  <!-- Contenido -->
+  <div
+    class="relative w-full max-w-2xl bg-white dark:bg-[#1a1a25] rounded-2xl border border-indigo-200 dark:border-indigo-700 shadow-2xl animate-fade-in-up transition-all duration-300 overflow-hidden"
+    (click)="$event.stopPropagation()"
+    [ngClass]="{ 'animate-shake': form?.submitted && form.invalid }"
+  >
     <!-- Botón cerrar -->
     <button class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl transition" (click)="cerrarModalCrearProyecto()" aria-label="Cerrar">✕</button>
 
-    <!-- Mensajes de éxito y error -->
-    <div *ngIf="mensajeExitoProyecto" class="mx-6 mt-4 mb-1 flex items-center gap-2 bg-emerald-100 dark:bg-emerald-800/40 text-emerald-700 dark:text-emerald-200 rounded-md p-3 shadow-sm animate-fade-in">
+    <!-- Éxito/Error -->
+    <div *ngIf="mensajeExitoProyecto" class="mx-6 mt-5 flex items-center gap-2 bg-emerald-100 dark:bg-emerald-700/20 text-emerald-800 dark:text-emerald-200 rounded-lg p-3 shadow-sm animate-fade-in">
       <span class="material-icons text-base">check_circle</span>
       <span>¡Proyecto creado con éxito!</span>
     </div>
 
-    <div *ngIf="mensajeErrorProyecto" class="mx-6 mt-4 mb-1 flex items-center gap-2 bg-red-100 dark:bg-red-800/40 text-red-700 dark:text-red-200 rounded-md p-3 shadow-sm animate-fade-in">
+    <div *ngIf="mensajeErrorProyecto" class="mx-6 mt-5 flex items-center gap-2 bg-red-100 dark:bg-red-800/20 text-red-800 dark:text-red-200 rounded-lg p-3 shadow-sm animate-fade-in">
       <span class="material-icons text-base">error_outline</span>
       <span>Ocurrió un error al crear el proyecto.</span>
     </div>
 
-    <!-- Encabezado del modal -->
-    <div class="px-6 pt-9 pb-3 border-b border-indigo-100 dark:border-indigo-500/40 flex items-center justify-start gap-2">
+    <!-- Encabezado -->
+    <div class="px-6 pt-9 pb-3 border-b border-indigo-100 dark:border-indigo-500/40 flex items-center gap-3">
       <span class="material-icons text-indigo-600 dark:text-indigo-400 text-xl">add_circle</span>
       <h2 class="text-xl font-semibold text-gray-800 dark:text-white tracking-wide">Crear nuevo proyecto</h2>
     </div>
 
     <!-- Formulario -->
-    <form #form="ngForm" (ngSubmit)="enviarProyecto()" class="px-6 pt-4 pb-6 space-y-4">
-      
-      <!-- Nombre del proyecto -->
+    <form #form="ngForm" (ngSubmit)="enviarProyecto()" class="px-6 pt-4 pb-6 space-y-5">
+      <!-- Nombre -->
       <div>
-        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 tracking-wide mb-1">Nombre del proyecto</label>
+        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 mb-1">📛 Nombre del proyecto</label>
         <input name="nombre" [(ngModel)]="nuevoProyecto.nombre" required #nombre="ngModel"
-               class="w-full px-4 py-2 rounded-md border bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-white shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+               class="w-full px-4 py-2 rounded-md border bg-white/90 dark:bg-gray-800/70 text-gray-900 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                [ngClass]="{
                  'border-gray-300 dark:border-gray-600': !nombre.invalid || !nombre.touched,
                  'border-red-500 ring-red-500': nombre.invalid && (nombre.touched || form.submitted)
@@ -175,9 +197,9 @@
 
       <!-- Descripción -->
       <div>
-        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 tracking-wide mb-1">Descripción</label>
+        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 mb-1">📝 Descripción</label>
         <textarea name="descripcion" [(ngModel)]="nuevoProyecto.descripcion" required rows="4" #descripcion="ngModel"
-                  class="w-full px-4 py-2 rounded-md border bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-white shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  class="w-full px-4 py-2 rounded-md border bg-white/90 dark:bg-gray-800/70 text-gray-900 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                   [ngClass]="{
                     'border-gray-300 dark:border-gray-600': !descripcion.invalid || !descripcion.touched,
                     'border-red-500 ring-red-500': descripcion.invalid && (descripcion.touched || form.submitted)
@@ -188,95 +210,116 @@
       <!-- Estado oculto -->
       <input type="hidden" name="estado_proyecto" [(ngModel)]="nuevoProyecto.estado_proyecto" value="activo" />
 
-      <!-- Rol -->
+      <!-- Rol PMO fijo -->
       <div>
-        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 tracking-wide mb-1">Rol asignado</label>
+        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 mb-1">👤 Rol asignado</label>
         <input type="text" value="Project Management Office (PMO)" readonly
-               class="w-full px-4 py-2 rounded-md border bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-not-allowed shadow-sm" />
+               class="w-full px-4 py-2 rounded-md border bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-sm cursor-not-allowed" />
       </div>
 
       <!-- Botones -->
       <div class="flex justify-end gap-3 pt-2">
-        <!-- Botón cancelar -->
+        <!-- Cancelar -->
         <button type="button" (click)="cerrarModalCrearProyecto()"
                 class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition shadow-md font-medium">
           Cancelar
         </button>
 
-        <!-- Botón de crear proyecto -->
+        <!-- Crear -->
         <button type="submit"
                 [disabled]="form.invalid || enviandoProyecto"
-                class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold flex items-center gap-2 hover:bg-indigo-700 hover:ring-2 hover:ring-indigo-400 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                class="px-5 py-2 rounded-lg bg-indigo-600 text-white font-semibold flex items-center gap-2 hover:bg-indigo-700 hover:ring-2 hover:ring-indigo-400 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
           <ng-container *ngIf="!enviandoProyecto; else cargando">
             <span class="material-icons text-sm">check_circle</span>
             Crear proyecto
           </ng-container>
           <ng-template #cargando>
-            <svg
-              class="h-5 w-5 text-white"
-              style="animation: spin 20s linear infinite;"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
+            <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-              ></path>
+              <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
             </svg>
             <span class="ml-2">Enviando...</span>
           </ng-template>
         </button>
       </div>
-
     </form>
   </div>
 </div>
 
 
-    <!-- MODAL DE ACTIVIDAD -->
- <div *ngIf="modalAbierto && actividadSel" class="fixed inset-0 z-50 flex items-center justify-center">  
+ <!-- 📌 MODAL DETALLE DE ACTIVIDAD -->
+<div *ngIf="modalAbierto && actividadSel" class="fixed inset-0 z-50 flex items-center justify-center px-4">
+  <!-- Fondo difuminado -->
   <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" (click)="cerrarModal()"></div>
 
-      <div
-        class="relative w-[95%] sm:w-[600px] md:w-[720px] max-h-[90vh] overflow-y-auto
-              bg-white dark:bg-gray-900 text-gray-800 dark:text-white
-              rounded-2xl shadow-2xl p-6 animate-fade-in ring-1 ring-gray-300 dark:ring-gray-700"
-        (click)="$event.stopPropagation()"
-      >
-        <button
-          class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl transition-colors"
-          (click)="cerrarModal()" aria-label="Cerrar">✕</button>
+  <!-- Contenedor principal -->
+  <div
+    class="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-[#1a1a25]
+            text-gray-800 dark:text-white shadow-2xl ring-1 ring-gray-300 dark:ring-gray-700 animate-fade-in"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Botón cerrar -->
+    <button
+      class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl transition"
+      (click)="cerrarModal()" aria-label="Cerrar">✕</button>
 
-        <div class="flex items-center gap-4 mb-6 border-b pb-4 border-gray-200 dark:border-gray-700">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow text-white bg-indigo-500">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M3 4h18M3 10h18M3 16h18" />
-            </svg>
-          </div>
-          <div>
-            <h2 class="text-xl font-bold leading-tight">Detalle de actividad</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              {{ actividadSel.fecha_hora | date:'fullDate' }}
-            </p>
-          </div>
+    <!-- Header -->
+    <div class="flex items-center gap-4 p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-sky-600 text-white flex items-center justify-center shadow-inner">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3 4h18M3 10h18M3 16h18" />
+        </svg>
+      </div>
+      <div class="flex-1">
+        <h2 class="text-xl font-bold">Detalle de Actividad</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          {{ actividadSel.fecha_hora | date:'fullDate' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Detalles -->
+    <div class="p-6">
+      <div class="space-y-4 text-sm">
+        <div class="flex items-start gap-3">
+          <span class="text-gray-500 dark:text-gray-400 w-32 font-medium">📁 Proyecto:</span>
+          <span class="text-gray-800 dark:text-white">{{ actividadSel.nombre_proyecto }}</span>
         </div>
 
-        <table class="w-full text-sm table-auto border-separate border-spacing-y-2">
-          <tbody>
-            <tr><th class="text-left text-gray-500 dark:text-gray-400 w-1/3">Proyecto:</th><td>{{ actividadSel.nombre_proyecto }}</td></tr>
-            <tr><th class="text-left text-gray-500 dark:text-gray-400">Tarea:</th><td>{{ actividadSel.nombre_tarea }}</td></tr>
-            <tr><th class="text-left text-gray-500 dark:text-gray-400">Historia de usuario:</th><td>{{ actividadSel.nombre_hu }}</td></tr>
-            <tr><th class="text-left text-gray-500 dark:text-gray-400">Acción:</th><td>{{ actividadSel.accion_realizada }}</td></tr>
-            <tr><th class="text-left text-gray-500 dark:text-gray-400">Rol:</th><td>{{ actividadSel.rol_participacio }}</td></tr>
-            <tr><th class="text-left text-gray-500 dark:text-gray-400">Usuario:</th><td>{{ actividadSel.usuario }}</td></tr>
-            <tr><th class="text-left text-gray-500 dark:text-gray-400">Fecha:</th><td>{{ actividadSel.fecha_hora | date:'medium' }}</td></tr>
-          </tbody>
-        </table>
+        <div class="flex items-start gap-3">
+          <span class="text-gray-500 dark:text-gray-400 w-32 font-medium">📝 Tarea:</span>
+          <span class="text-gray-800 dark:text-white">{{ actividadSel.nombre_tarea || '—' }}</span>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <span class="text-gray-500 dark:text-gray-400 w-32 font-medium">🗂️ Historia de Usuario:</span>
+          <span class="text-gray-800 dark:text-white">{{ actividadSel.nombre_hu || '—' }}</span>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <span class="text-gray-500 dark:text-gray-400 w-32 font-medium">⚙️ Acción:</span>
+          <span class="text-gray-800 dark:text-white">{{ actividadSel.accion_realizada }}</span>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <span class="text-gray-500 dark:text-gray-400 w-32 font-medium">🧑 Rol:</span>
+          <span class="text-gray-800 dark:text-white">{{ actividadSel.rol_participacio }}</span>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <span class="text-gray-500 dark:text-gray-400 w-32 font-medium">👤 Usuario:</span>
+          <span class="text-gray-800 dark:text-white">{{ actividadSel.usuario }}</span>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <span class="text-gray-500 dark:text-gray-400 w-32 font-medium">🕒 Fecha:</span>
+          <span class="text-gray-800 dark:text-white">{{ actividadSel.fecha_hora | date:'medium' }}</span>
+        </div>
       </div>
+    </div>
   </div>
+</div>
 
 <!-- █ Modal DETALLE de proyecto -->
 <div *ngIf="modalProyectoAbierto && proyectoSel"
