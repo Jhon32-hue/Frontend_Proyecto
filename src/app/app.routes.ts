@@ -9,6 +9,7 @@ import { strictProjectGuard } from './Guards/strict-project-guard-guard';
 import { HistoriaUsuario } from './pages/historia-usuario/historia-usuario';
 import { KanbanHu } from './component/kanban-hu/kanban-hu';
 import { VerifyAccount } from './pages/auth/verify-account/verify-account';
+import { TaskList } from './pages/tasks/task-list/task-list';
 
 export const routes: Routes = [
   {
@@ -45,5 +46,9 @@ export const routes: Routes = [
   path: 'verify-account',
   component: VerifyAccount,
 },
+{
+   path: 'task-list',
+  component: TaskList,
+}
 
 ];

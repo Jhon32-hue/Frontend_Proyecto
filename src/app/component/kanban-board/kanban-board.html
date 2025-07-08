@@ -22,30 +22,29 @@
         <!-- Botones -->
         <button
           (click)="abrirModal()"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-1.5 rounded-full shadow-sm"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-1.5 rounded-full shadow-sm transition-all duration-200"
         >
           + Invitar
         </button>
-        <button class="flex items-center gap-2 text-sm text-gray-900 dark:text-white px-4 py-1.5 rounded-full border border-gray-600 hover:bg-gray-800 transition">
+        <button class="flex items-center gap-2 text-sm text-gray-900 dark:text-white px-4 py-1.5 rounded-full border border-gray-600 hover:bg-gray-800 transition-all duration-200">
           <span class="material-icons text-base">share</span> Compartir
         </button>
       </div>
 
       <!-- 🔘 Tabs -->
       <div class="flex flex-wrap justify-center sm:justify-start mt-3 sm:mt-6 gap-2 sm:gap-4 bg-white dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm w-full sm:w-auto max-w-full">
-        <button class="px-4 py-1.5 text-sm font-medium rounded-lg transition text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700">Board</button>
-        <button class="px-4 py-1.5 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-400">To-do</button>
-        <button class="px-4 py-1.5 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-400">Table</button>
-        <button class="px-4 py-1.5 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-400">List</button>
+        <button class="px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">Board</button>
+        <button class="px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">To-do</button>
+        <button class="px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">Table</button>
+        <button class="px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">List</button>
       </div>
     </div>
   </div>
 </header>
 
-
 <!-- 🧱 KANBAN GRID AJUSTADO -->
 <div class="w-full px-4 py-8 bg-gray-100/30 dark:bg-[#0f172a] rounded-b-3xl shadow-inner">
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-15 -mt-3">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 -mt-3">
     <ng-container *ngFor="let estado of estados">
       <div class="w-full max-w-[320px] mx-auto rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1a1a2e] shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
 
@@ -128,6 +127,10 @@
             </div>
           </ng-container>
         </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
 
 
 <!-- ✅ TOAST DE NOTIFICACIÓN LATERAL EMERGENTE -->
@@ -149,97 +152,92 @@
   <span class="flex-1">{{ toastMensaje }}</span>
 </div>
 
-<!-- Modal invitar proyecto-->
-<div *ngIf="modalVisible" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-lg bg-gray-50/10">
-  <div class="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl p-8 animate-fade-in transition-all duration-500 ease-in-out">
+<!-- Modal invitar proyecto -->
+<div *ngIf="modalVisible" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/30">
+  <div class="relative bg-white dark:bg-[#1f1f28] w-full max-w-xl rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 p-8 transition-all duration-300 ease-in-out animate-fade-in">
 
     <!-- Encabezado -->
     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-semibold text-gray-900">Invitar Colaborador</h2>
-      <button (click)="cerrarModalInvitar()" class="text-gray-500 hover:text-gray-700 transition">
-        ✕
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Invitar colaborador</h2>
+      <button (click)="cerrarModalInvitar()" class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
       </button>
     </div>
 
-    <!-- Cuerpo con loading si aplica -->
+    <!-- Carga -->
     <div *ngIf="loadingProyectos || loadingRoles" class="flex justify-center items-center h-40">
-      <div class="animate-spin h-10 w-10 rounded-full border-4 border-indigo-600 border-t-transparent"></div>
+      <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Formulario -->
     <form *ngIf="!loadingProyectos && !loadingRoles" (ngSubmit)="invitarColaborador()" #invitarForm="ngForm" class="space-y-6">
 
-      <!-- Correo -->
+      <!-- Email -->
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-800">Correo del colaborador</label>
+        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo del colaborador</label>
         <input
           type="email"
           id="email"
           name="email"
           [(ngModel)]="email"
-          class="mt-1 w-full px-4 py-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-          placeholder="ejemplo@correo.com"
           required
+          placeholder="ejemplo@correo.com"
+          class="mt-2 w-full px-4 py-3 bg-white dark:bg-[#2c2c38] border border-gray-300 dark:border-white/10 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
         />
       </div>
 
       <!-- Proyecto -->
       <div>
-        <label for="proyecto" class="block text-sm font-medium text-gray-800">Proyecto</label>
+        <label for="proyecto" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Proyecto</label>
         <select
           id="proyecto"
-          [(ngModel)]="proyectoSeleccionado"
           name="proyecto"
+          [(ngModel)]="proyectoSeleccionado"
           required
-          class="mt-1 w-full px-4 py-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+          class="mt-2 w-full px-4 py-3 bg-white dark:bg-[#2c2c38] border border-gray-300 dark:border-white/10 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
         >
           <option value="" disabled selected hidden>Selecciona un proyecto...</option>
-          <option *ngFor="let proyecto of proyectosDisponibles" [value]="proyecto.id_proyecto">
-            {{ proyecto.nombre }}
-          </option>
+          <option *ngFor="let proyecto of proyectosDisponibles" [value]="proyecto.id_proyecto">{{ proyecto.nombre }}</option>
         </select>
-        <p *ngIf="proyectosDisponibles.length === 0" class="text-sm text-red-500 mt-2">
-          ⚠️ No hay proyectos donde seas PMO.
-        </p>
+        <p *ngIf="proyectosDisponibles.length === 0" class="text-sm text-red-500 mt-2">⚠️ No hay proyectos donde seas PMO.</p>
       </div>
 
       <!-- Rol -->
       <div>
-        <label for="rol" class="block text-sm font-medium text-gray-800">Rol</label>
+        <label for="rol" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Rol</label>
         <select
           id="rol"
-          [(ngModel)]="rolSeleccionado"
           name="rol"
+          [(ngModel)]="rolSeleccionado"
           required
-          class="mt-1 w-full px-4 py-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+          class="mt-2 w-full px-4 py-3 bg-white dark:bg-[#2c2c38] border border-gray-300 dark:border-white/10 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
         >
           <option value="" disabled selected hidden>Selecciona un rol...</option>
-          <option *ngFor="let rol of rolesDisponibles" [value]="rol.id_rol">
-            {{ rol.nombre }}
-          </option>
+          <option *ngFor="let rol of rolesDisponibles" [value]="rol.id_rol">{{ rol.nombre }}</option>
         </select>
-        <p *ngIf="rolesDisponibles.length === 0" class="text-sm text-red-500 mt-2">
-          ⚠️ No se encontraron roles disponibles.
-        </p>
+        <p *ngIf="rolesDisponibles.length === 0" class="text-sm text-red-500 mt-2">⚠️ No se encontraron roles disponibles.</p>
       </div>
 
       <!-- Botones -->
-      <div class="flex justify-end gap-4 pt-4">
-        <button type="button" (click)="cerrarModalInvitar()" class="px-6 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition">
+      <div class="flex justify-end gap-3 pt-2">
+        <button type="button"
+                (click)="cerrarModalInvitar()"
+                class="px-5 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium transition dark:bg-white/5 dark:hover:bg-white/10 dark:text-gray-300">
           Cancelar
         </button>
-        <button
-          type="submit"
-          [disabled]="!invitarForm.valid || loadingProyectos || loadingRoles"
-          class="px-6 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition"
-        >
+        <button type="submit"
+                [disabled]="!invitarForm.valid || loadingProyectos || loadingRoles"
+                class="px-6 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition disabled:opacity-50">
           Invitar
         </button>
       </div>
     </form>
 
-    <!-- Mensaje tipo toast mejorado -->
-    <div *ngIf="toastMensaje" class="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-lg text-sm font-medium shadow-2xl text-white animate-fade-in"
+    <!-- Toast mensaje -->
+    <div *ngIf="toastMensaje"
+         class="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-lg text-sm font-medium text-white shadow-xl animate-fade-in"
          [ngClass]="{
            'bg-green-500': toastTipo === 'success',
            'bg-red-500': toastTipo === 'error'
@@ -251,31 +249,38 @@
 
 
 
-<!-- 📦 MODAL DETALLE DE PROYECTO -->
-<div *ngIf="showModal && selectedProyecto" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center px-2 sm:px-4">
-  <div class="bg-gray-100 dark:bg-[#1f1f2b] w-full max-w-3xl sm:max-w-4xl md:max-w-5xl lg:max-w-6xl rounded-2xl shadow-xl p-4 sm:p-6 relative animate-fade-in-up border border-gray-200 dark:border-gray-700">
+<!-- ⚡ MODAL DETALLE DE PROYECTO-->
+<div *ngIf="showModal && selectedProyecto" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center px-2 sm:px-4 py-6 sm:py-10">
+  <div class="bg-gray-100 dark:bg-[#1f1f2b] w-full max-w-3xl sm:max-w-4xl md:max-w-5xl lg:max-w-6xl max-h-[95vh] overflow-y-auto rounded-2xl shadow-xl p-4 sm:p-6 relative animate-fade-in-up border border-gray-200 dark:border-gray-700 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-600">
 
-    <!-- Cabecera -->
-    <div class="flex justify-between items-start mt-2 mb-5 gap-4">
+    <!-- 🗓 Cabecera -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2 mb-5 gap-4">
       <div class="flex-1">
         <div class="flex items-center gap-2 mb-2">
           <span class="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium">#{{ selectedProyecto.id }}</span>
-          <span class="text-xs px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 font-medium">{{ selectedProyecto.estado_proyecto | titlecase }}</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 font-medium">
+            {{ selectedProyecto.estado_proyecto | titlecase }}
+          </span>
         </div>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white leading-snug">{{ selectedProyecto.nombre }}</h2>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white leading-snug break-words">{{ selectedProyecto.nombre }}</h2>
       </div>
-      <div class="flex gap-2 shrink-0">
-        <button (click)="irAlTableroHU(selectedProyecto)" class="hidden md:inline-flex px-4 py-1.5 rounded-lg bg-gradient-to-tr from-indigo-500 to-sky-600 text-white text-xs font-semibold shadow hover:from-indigo-600 hover:to-sky-700 transition-all">Ver tablero HU</button>
-        <button (click)="cerrarModal()" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition">Cerrar</button>
+      <div class="flex flex-wrap gap-2 shrink-0">
+        <button (click)="irAlTableroHU(selectedProyecto)" class="px-4 py-1.5 rounded-lg bg-gradient-to-tr from-indigo-500 to-sky-600 text-white text-xs font-semibold shadow hover:from-indigo-600 hover:to-sky-700 transition-all">
+          <i class="ri-layout-masonry-line mr-1"></i> Tablero HU
+        </button>
+        <button (click)="cerrarModal()" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <i class="ri-close-line mr-1"></i> Cerrar
+        </button>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
+    <!-- 📊 Grid General -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
 
       <!-- 📝 Panel Izquierdo -->
-      <div class="md:col-span-2 space-y-8">
+      <div class="md:col-span-2 space-y-6">
 
-        <!-- 📄 Descripción -->
+        <!-- Descripción -->
         <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
           <h3 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-3">
             <i class="ri-file-text-line text-lg text-indigo-400"></i> Descripción
@@ -283,13 +288,13 @@
           <p class="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-line leading-relaxed">{{ selectedProyecto.descripcion || 'Sin descripción' }}</p>
         </div>
 
-        <!-- 🧩 HU agrupadas -->
+        <!-- HU agrupadas -->
         <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
           <h3 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
             <i class="ri-list-check text-lg text-green-500"></i> Historias de Usuario Pendientes
           </h3>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-            <div class="rounded-lg p-3 text-center bg-gray-50 dark:bg-slate-700 shadow hover:shadow-md transition">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div class="rounded-lg p-3 text-center bg-gray-50 dark:bg-slate-700 shadow">
               <p class="text-xs text-gray-500 dark:text-gray-300">Totales</p>
               <p class="text-lg font-bold text-indigo-600 dark:text-indigo-400">{{ selectedProyecto.huCount }}</p>
             </div>
@@ -301,27 +306,28 @@
               <p class="text-xs text-gray-500 dark:text-gray-300">En proceso</p>
               <p class="text-lg font-bold text-sky-600 dark:text-sky-400">{{ selectedProyecto.huPorEstado.en_proceso }}</p>
             </div>
-            <div class="rounded-lg p-3 text-center bg-green-50 dark:bg-green-900/30 shadow">
+            <div class="rounded-lg p-3 text-center bg-green-50 dark:bg-green-900/30 shadow col-span-2 sm:col-span-1">
               <p class="text-xs text-gray-500 dark:text-gray-300">Cerradas</p>
               <p class="text-lg font-bold text-green-600 dark:text-green-400">{{ selectedProyecto.huPorEstado.cerrada }}</p>
             </div>
           </div>
         </div>
 
-        <!-- 💬 Comentarios -->
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        <!-- Comentarios -->
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col">
           <h3 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-3">
             <i class="ri-chat-3-line text-lg text-indigo-400"></i> Comentarios
           </h3>
 
-          <div class="max-h-40 sm:max-h-52 overflow-y-auto space-y-3 pr-1 text-sm">
-            <div *ngFor="let comentario of mostrarComentarios()" class="bg-gray-50 dark:bg-slate-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition">
+          <!-- Lista de comentarios con scroll -->
+          <div class="max-h-52 overflow-y-auto pr-1 space-y-3 text-sm">
+            <div *ngFor="let comentario of mostrarComentarios()" class="bg-gray-50 dark:bg-slate-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
               <div class="flex justify-between items-center mb-1">
                 <span class="font-semibold text-indigo-600 dark:text-indigo-300">{{ comentario.nombre_usuario }}</span>
                 <span class="text-xs text-gray-400 italic">{{ comentario.fecha ? (comentario.fecha | date:'short') : '—' }}</span>
               </div>
 
-              <!-- Comentario en modo edición -->
+              <!-- Modo edición -->
               <div *ngIf="comentarioEnEdicion === comentario" class="space-y-2">
                 <textarea [(ngModel)]="textoEditado" rows="2" class="w-full text-sm p-2 rounded border dark:border-slate-600 bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-white"></textarea>
                 <div class="flex gap-2">
@@ -330,7 +336,7 @@
                 </div>
               </div>
 
-              <!-- Comentario en modo visual -->
+              <!-- Modo visual -->
               <div *ngIf="comentarioEnEdicion !== comentario">
                 <p class="text-sm text-gray-800 dark:text-white whitespace-pre-line">{{ comentario.texto }}</p>
                 <div class="flex gap-2 mt-1">
@@ -348,20 +354,19 @@
           </div>
         </div>
 
-        <!-- 🕒 Historial -->
+        <!-- Historial -->
         <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
           <h3 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-3">
             <i class="ri-history-line text-lg text-pink-400"></i> Historial de Cambios
           </h3>
-          <div class="text-sm text-gray-700 dark:text-gray-300 italic space-y-1">
+          <div class="text-sm text-gray-700 dark:text-gray-300 italic space-y-1 max-h-40 overflow-y-auto pr-1">
             <p *ngFor="let h of historialCambios">• {{ h.fecha | date:'short' }} — {{ h.descripcion }}</p>
             <p *ngIf="!historialCambios?.length">Sin historial disponible.</p>
           </div>
         </div>
       </div>
 
-
-      <!-- 📊 Panel Derecho -->
+      <!-- 📈 Panel Derecho -->
       <div class="space-y-6 bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow">
 
         <div class="space-y-5 bg-gray-50 dark:bg-slate-700 p-4 rounded-lg shadow-inner border border-gray-200 dark:border-gray-600">

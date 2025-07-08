@@ -20,7 +20,9 @@ export interface Participacion {
   providedIn: 'root'
 })
 export class DevloperService {
-  private apiUrl = 'http://localhost:8000/api/participacion/';
+ private apiUrl = 'http://localhost:8000/api/participacion/';
+
+
 
   constructor(private http: HttpClient) {}
 

@@ -26,9 +26,9 @@ export class KanbanHu implements OnInit, OnChanges {
   historias: HistoriaUsuario[] = [];
 
   estados = [
-    { valor: 'por_hacer', label: 'Por hacer' },
-    { valor: 'en_proceso', label: 'En proceso' },
-    { valor: 'cerrada', label: 'Cerrada' }
+    { valor: 'por_hacer' as EstadoHu, label: 'Por hacer' },
+    { valor: 'en_proceso' as EstadoHu, label: 'En proceso' },
+    { valor: 'cerrada' as EstadoHu, label: 'Cerrada' }
   ];
 
   modalCrearHU = false;
@@ -36,7 +36,6 @@ export class KanbanHu implements OnInit, OnChanges {
 
   developers: Developer[] = [];
 
-  // ✅ Incluye participacion_asignada y estado por defecto
   nuevaHU: Partial<HistoriaUsuario> = {
     titulo: '',
     descripcion: '',
@@ -87,7 +86,7 @@ export class KanbanHu implements OnInit, OnChanges {
     if (!this.proyectoId) return;
 
     this.huService.listByProyecto(this.proyectoId).subscribe({
-      next: (res) => this.historias = res,
+      next: (res) => (this.historias = res),
       error: (err) => console.error('❌ Error al cargar historias:', err)
     });
   }
@@ -95,28 +94,25 @@ export class KanbanHu implements OnInit, OnChanges {
   cargarDevelopers(): void {
     if (!this.proyectoId) return;
 
+    this.developers = [];
+
     this.developerService.obtenerDevelopersPorProyecto(this.proyectoId).subscribe({
       next: (res) => {
-        console.log('📦 Participaciones crudas:', res);
-
         this.developers = res
           .filter(p => p.id_usuario && p.id_usuario.id)
           .map(p => ({
-            participacion_id: p.id_participacion,                      // ID que espera el backend
-            nombre: p.id_usuario.nombre_completo,                      // Nombre visible
-            rol: p.id_rol.nombre_rol                                   // Rol visible
+            participacion_id: p.id_participacion,
+            nombre: p.id_usuario.nombre_completo,
+            rol: p.id_rol.nombre_rol
           }));
-
-        console.log('👨‍💻 Developers formateados:', this.developers);
       },
       error: (err) => console.error('❌ Error al obtener developers:', err)
     });
   }
 
- historiasPorEstado(estado: EstadoHu | string): HistoriaUsuario[] {
-  return this.historias.filter(hu => hu.estado === estado);
-}
-
+  historiasPorEstado(estado: EstadoHu): HistoriaUsuario[] {
+    return this.historias.filter(hu => hu.estado === estado);
+  }
 
   abrirModalCrearHU(): void {
     this.modalCrearHU = true;
@@ -135,53 +131,75 @@ export class KanbanHu implements OnInit, OnChanges {
   }
 
   crearHistoria(): void {
-    if (!this.proyectoId) {
-      console.warn('❌ No hay proyecto seleccionado.');
-      return;
-    }
-
-    if (!this.nuevaHU.titulo || !this.nuevaHU.descripcion) {
-      console.warn('❌ Campos incompletos');
+    if (!this.proyectoId || !this.nuevaHU.titulo || !this.nuevaHU.descripcion) {
       return;
     }
 
     const payload: Partial<HistoriaUsuario> = {
       ...this.nuevaHU,
       proyecto: this.proyectoId,
-      participacion_asignada: this.nuevaHU.participacion_asignada 
-        ? Number(this.nuevaHU.participacion_asignada) 
+      participacion_asignada: this.nuevaHU.participacion_asignada
+        ? Number(this.nuevaHU.participacion_asignada)
         : null
     };
 
-    console.log('📤 Payload a enviar:', payload); // 👈 Esto es clave
-
     this.huService.create(payload).subscribe({
       next: (res) => {
-        console.log('✅ Historia creada:', res);
         this.historias.push(res);
         this.cerrarModalCrearHU();
       },
+      error: (err) => console.error('❌ Error al crear historia:', err)
+    });
+  }
+
+  // ✅ DRAG AND DROP NATIVO
+  onDragStart(event: DragEvent, hu: HistoriaUsuario, columnaOrigen: EstadoHu): void {
+    const payload = { hu: { id: hu.id }, columnaOrigen };
+    event.dataTransfer?.setData('text/plain', JSON.stringify(payload));
+  }
+
+  onDrop(event: DragEvent, nuevoEstado: EstadoHu): void {
+    event.preventDefault();
+    const data = event.dataTransfer?.getData('text/plain');
+    if (!data) return;
+
+    const parsed = JSON.parse(data) as {
+      hu: { id: number };
+      columnaOrigen: EstadoHu;
+    };
+
+    const { hu, columnaOrigen } = parsed;
+    if (columnaOrigen === nuevoEstado) return;
+
+    const historia = this.historias.find(h => h.id === hu.id);
+    if (!historia) return;
+
+    const estadoAnterior = historia.estado;
+    historia.estado = nuevoEstado;
+
+    this.huService.update(historia.id, { ...historia, estado: nuevoEstado }).subscribe({
+      next: () => {
+        this.historias = [...this.historias];
+      },
       error: (err) => {
-        console.error('❌ Error al crear historia:', err);
-        if (err.error?.non_field_errors) {
-          console.warn('⚠️ Validación:', err.error.non_field_errors);
-        } else if (err.error) {
-          console.warn('⚠️ Detalles del error:', err.error);
-        }
+        historia.estado = estadoAnterior;
+        console.error('❌ Error al mover historia:', err);
       }
     });
   }
 
-
-  obtenerProgresoMock(estado: EstadoHu | string): number {
-  switch (estado) {
-    case 'por_hacer': return 10;
-    case 'en_proceso': return 50;
-    case 'cerrada': return 100;
-    default: return 0;
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
   }
-}
 
+  obtenerProgresoMock(estado: EstadoHu): number {
+    switch (estado) {
+      case 'por_hacer': return 10;
+      case 'en_proceso': return 50;
+      case 'cerrada': return 100;
+      default: return 0;
+    }
+  }
 
   irAProyectos(): void {
     this.router.navigate(['/project_list']);

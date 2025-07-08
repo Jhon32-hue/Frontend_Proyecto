@@ -1,0 +1,54 @@
+<!-- 🌐 Tablero Kanban -->
+<div class="p-4 md:p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Mis Tareas</h2>
+    <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition">
+      + Nueva Tarea
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <!-- Columna por estado -->
+    <div
+      *ngFor="let estado of estados"
+      class="bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-slate-700 rounded-2xl shadow-lg flex flex-col transition-all"
+    >
+      <!-- Header -->
+      <div class="bg-gray-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-200 dark:border-gray-800 rounded-t-2xl flex items-center justify-between">
+        <h3 class="text-xs font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">{{ estado.label }}</h3>
+        <span class="text-xs text-gray-400">{{ tareasPorEstado(estado.valor).length }}</span>
+      </div>
+
+      <!-- Lista de tareas -->
+      <div class="flex-1 px-4 py-3 space-y-3 overflow-y-auto max-h-[60vh] custom-scroll">
+        <div
+          *ngFor="let tarea of tareasPorEstado(estado.valor)"
+          draggable="true"
+          class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow hover:shadow-md cursor-pointer transition transform hover:scale-[1.02]"
+        >
+          <!-- Título -->
+          <div class="flex justify-between items-start mb-1">
+            <h4 class="text-sm font-semibold text-gray-800 dark:text-white">{{ tarea.titulo }}</h4>
+            <span class="text-[10px] text-gray-400 dark:text-gray-500">#{{ tarea.id }}</span>
+          </div>
+
+          <!-- Descripción -->
+          <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-2">{{ tarea.descripcion }}</p>
+
+          <!-- Metadata -->
+          <div class="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 mt-2">
+            <span>{{ tarea.fecha_entrega | date: 'shortDate' }}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px]" [ngClass]="{
+              'bg-green-200 text-green-700': tarea.prioridad === 'baja',
+              'bg-yellow-200 text-yellow-800': tarea.prioridad === 'media',
+              'bg-red-200 text-red-700': tarea.prioridad === 'alta'
+            }">
+              {{ tarea.prioridad | titlecase }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

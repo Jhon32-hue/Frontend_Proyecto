@@ -15,6 +15,8 @@ import { AuthServices } from '../../../services/Auth/auth';
 import { DeleteProject } from '../../../interfaces/projects';
 
 type ScreenSize = 'sm' | 'md' | 'lg';
+declare var ApexCharts: any;
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -268,4 +270,36 @@ tipoAccion(accion: string): 'crear' | 'editar' | 'eliminar' | 'otro' {
   return 'otro';
 }
 
+
+
+ngAfterViewInit(): void {
+  const options = {
+    chart: {
+      type: 'radialBar',
+      height: 140,
+      offsetY: 0
+    },
+    series: [76],
+    labels: ['Progreso'],
+    plotOptions: {
+      radialBar: {
+        hollow: { size: '60%' },
+        dataLabels: {
+          name: {
+            fontSize: '14px',
+            offsetY: 0
+          },
+          value: {
+            fontSize: '20px',
+            offsetY: 4
+          }
+        }
+      }
+    },
+    colors: ['#6366f1']
+  };
+
+  const chart = new ApexCharts(document.querySelector("#userChart"), options);
+  chart.render();
+}
 }

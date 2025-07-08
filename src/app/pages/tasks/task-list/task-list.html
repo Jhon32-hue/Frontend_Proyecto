@@ -1,1 +1,36 @@
-<p>task-list works!</p>
+<!-- 🔝 HEADER FIJO -->
+<app-header
+  (crearProyecto)="abrirModalProyectoDesdeHeader()"
+  (solicitarLogout)="abrirModalLogoutDesdeHeader()"
+  [sidebarAbierto]="isSidebarOpen"
+  class="fixed top-0 left-0 w-full h-16 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-md border-b border-gray-200 dark:border-gray-700 transition-all duration-300"
+></app-header>
+
+<div class="flex pt-10 min-h-screen bg-gray-100 dark:bg-[#1c1e32] transition-all overflow-hidden">
+
+  <!-- 🔪 SIDEBAR FIJO Y COLAPSABLE -->
+  <app-sidebar
+    [ngClass]="{
+      'w-64': isSidebarOpen,
+      'w-20': !isSidebarOpen
+    }"
+    class="h-[calc(100vh-4rem)] fixed top-16 left-0 z-40 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-md transition-all duration-300 ease-in-out"
+    (sidebarToggled)="onSidebarToggle($event)"
+  ></app-sidebar>
+
+   <!-- 🎯 CONTENIDO PRINCIPAL -->
+  <main
+    [ngClass]="{
+      'ml-64': isSidebarOpen,
+      'ml-20': !isSidebarOpen
+    }"
+    class="flex-1 px-4 py-6 sm:px-6 md:px-8 lg:px-10 transition-all duration-300 ease-in-out min-w-0"
+  >
+    <div class="max-w-[1600px] mx-auto space-y-8">
+
+    <kanban-task></kanban-task>
+
+        
+    </div>
+  </main>
+</div>

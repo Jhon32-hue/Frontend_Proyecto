@@ -8,7 +8,7 @@
 >
 
   <!-- 🔍 Buscador -->
-  <div class="flex-1 flex justify-center">
+  <div class="cursor-pointer flex-1 flex justify-center">
     <div
       class="relative transition-all duration-300 ease-in-out"
       [ngClass]="{ 'w-[28rem]': searchFocused, 'w-64': !searchFocused }"
@@ -30,17 +30,17 @@
   </div>
 
   <!-- 📦 Panel derecho -->
-  <div class="flex items-center gap-4 ml-4">
+  <div class="cursor-pointer flex items-center gap-4 ml-4">
 
     <!-- ➕ Acción rápida -->
     <div class="relative group">
       <button
         (click)="togglePanel('quick')"
-        class="w-9 h-9 flex items-center justify-center rounded-full bg-indigo-600 hover:bg-indigo-700
+        class="cursor-pointer w-9 h-9 flex items-center justify-center rounded-full bg-indigo-600 hover:bg-indigo-700
                text-white shadow-md hover:shadow-xl transition hover:scale-105"
         aria-label="Acciones rápidas"
       >
-        <span class="material-icons text-base">add</span>
+        <span class="cursor-pointer material-icons text-base">add</span>
       </button>
       <!-- Tooltip -->
       <div
@@ -64,7 +64,7 @@
           <li *ngFor="let qa of quickActions">
             <button
               (click)="qa.action()"
-              class="w-full text-left px-4 py-2 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition"
+              class="cursor-pointer w-full text-left px-4 py-2 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition"
             >
               <span class="material-icons text-indigo-600 text-lg">{{ qa.icon }}</span>
               <span class="truncate">{{ qa.label }}</span>
@@ -78,7 +78,7 @@
     <div class="relative group">
       <button
         (click)="togglePanel('notifications')"
-        class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800
+        class="cursor-pointer w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800
                transition shadow-md hover:shadow-xl hover:scale-105 relative"
         aria-label="Notificaciones"
       >
@@ -116,7 +116,7 @@
     <div class="relative group">
       <button
         (click)="abrirSoporte()"
-        class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800
+        class="cursor-pointer w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800
                transition shadow-md hover:shadow-xl hover:scale-105"
         aria-label="Soporte"
       >
@@ -139,7 +139,7 @@
     <div class="relative group flex items-center gap-2">
       <button
         (click)="togglePanel('user')"
-        class="w-9 h-9 rounded-full overflow-hidden hover:ring-2 ring-indigo-500 transition hover:scale-105
+        class="cursor-pointer w-9 h-9 rounded-full overflow-hidden hover:ring-2 ring-indigo-500 transition hover:scale-105
                shadow-md hover:shadow-xl"
       >
         <img
@@ -169,7 +169,7 @@
           <li *ngFor="let estado of estadoOpciones">
             <button
               (click)="cambiarEstado(estado)"
-              class="w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+              class="cursor-pointer w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
               [class.opacity-50]="estadoUsuario === estado"
             >
               <span
@@ -196,12 +196,12 @@
 
           <!-- Config -->
           <li>
-            <button class="w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <button class="cursor-pointer w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700">
               <span class="material-icons text-base text-indigo-500">person</span> Perfil
             </button>
           </li>
           <li>
-            <button class="w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <button class="cursor-pointer w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700">
               <span class="material-icons text-base text-indigo-500">settings</span> Configuración
             </button>
           </li>
@@ -244,7 +244,7 @@
           <div class="my-4">
             <button
               (click)="cerrarSesion()"
-              class="flex items-center gap-3 w-full px-3 py-2
+              class="cursor-pointer flex items-center gap-3 w-full px-3 py-2
                      text-red-600 dark:text-red-400 rounded-lg
                      hover:bg-red-100 dark:hover:bg-red-900/30 hover:ring-1 hover:ring-red-400/30 transition-colors"
             >
