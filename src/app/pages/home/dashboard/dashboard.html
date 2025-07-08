@@ -122,99 +122,124 @@
 </div>
 
 
-
-<!-- ✅ MODAL CREAR NUEVO PROYECTO -->
+<!-- ✅ MODAL CREAR NUEVO PROYECTO - DISEÑO NUEVO -->
 <div *ngIf="modalCrearProyecto" class="fixed inset-0 z-50 flex items-center justify-center px-4 py-10 bg-black/40 backdrop-blur-md">
-  <!-- Fondo blur -->
+  <!-- Capa fondo -->
   <div class="absolute inset-0" (click)="cerrarModalCrearProyecto()"></div>
 
   <!-- Contenido -->
   <div
-    class="relative w-full max-w-2xl bg-white dark:bg-[#1a1a25] rounded-2xl border border-indigo-200 dark:border-indigo-700 shadow-2xl animate-fade-in-up transition-all duration-300 overflow-hidden"
-    (click)="$event.stopPropagation()"
-    [ngClass]="{ 'animate-shake': form?.submitted && form.invalid }"
-  >
+    class="relative w-full max-w-2xl bg-white dark:bg-[#1a1a25] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl transition-all duration-300 overflow-hidden"
+    (click)="$event.stopPropagation()">
+
     <!-- Botón cerrar -->
-    <button class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl transition" (click)="cerrarModalCrearProyecto()" aria-label="Cerrar">✕</button>
-
-    <!-- Éxito/Error -->
-    <div *ngIf="mensajeExitoProyecto" class="mx-6 mt-5 flex items-center gap-2 bg-emerald-100 dark:bg-emerald-700/20 text-emerald-800 dark:text-emerald-200 rounded-lg p-3 shadow-sm animate-fade-in">
-      <span class="material-icons text-base">check_circle</span>
-      <span>¡Proyecto creado con éxito!</span>
-    </div>
-
-    <div *ngIf="mensajeErrorProyecto" class="mx-6 mt-5 flex items-center gap-2 bg-red-100 dark:bg-red-800/20 text-red-800 dark:text-red-200 rounded-lg p-3 shadow-sm animate-fade-in">
-      <span class="material-icons text-base">error_outline</span>
-      <span>Ocurrió un error al crear el proyecto.</span>
-    </div>
+    <button class="absolute top-5 right-5 text-gray-400 hover:text-red-500 text-2xl" (click)="cerrarModalCrearProyecto()" aria-label="Cerrar">✕</button>
 
     <!-- Encabezado -->
-    <div class="px-6 pt-9 pb-3 border-b border-indigo-100 dark:border-indigo-500/40 flex items-center gap-3">
-      <span class="material-icons text-indigo-600 dark:text-indigo-400 text-xl">add_circle</span>
-      <h2 class="text-xl font-semibold text-gray-800 dark:text-white tracking-wide">Crear nuevo proyecto</h2>
+    <div class="px-8 pt-8 pb-3">
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">Crear nuevo proyecto</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Organiza tus ideas y tareas de forma eficiente</p>
+    </div>
+    <!-- ✅ TOAST flotante -->
+    <div *ngIf="mensajeExitoProyecto || mensajeErrorProyecto" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
+      <div [ngClass]="{
+            'bg-emerald-100 text-emerald-800 dark:bg-emerald-700/20 dark:text-emerald-100': mensajeExitoProyecto,
+            'bg-red-100 text-red-800 dark:bg-red-700/20 dark:text-red-100': mensajeErrorProyecto
+          }"
+          class="px-5 py-3 rounded-xl shadow-lg flex items-center gap-2 text-sm animate-fade-in-out">
+        <span class="material-icons text-base">
+          {{ mensajeExitoProyecto ? 'check_circle' : 'error_outline' }}
+        </span>
+        {{ mensajeExitoProyecto ? '¡Proyecto creado con éxito!' : 'Error al crear el proyecto.' }}
+      </div>
     </div>
 
     <!-- Formulario -->
-    <form #form="ngForm" (ngSubmit)="enviarProyecto()" class="px-6 pt-4 pb-6 space-y-5">
+    <form #form="ngForm" (ngSubmit)="enviarProyecto()" class="px-8 pb-8 pt-2 space-y-5">
+
       <!-- Nombre -->
       <div>
-        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 mb-1">📛 Nombre del proyecto</label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre del proyecto</label>
         <input name="nombre" [(ngModel)]="nuevoProyecto.nombre" required #nombre="ngModel"
-               class="w-full px-4 py-2 rounded-md border bg-white/90 dark:bg-gray-800/70 text-gray-900 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-               [ngClass]="{
-                 'border-gray-300 dark:border-gray-600': !nombre.invalid || !nombre.touched,
-                 'border-red-500 ring-red-500': nombre.invalid && (nombre.touched || form.submitted)
-               }" />
+          class="w-full px-4 py-2 rounded-md border bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          [ngClass]="{
+            'border-gray-300 dark:border-gray-600': !nombre.invalid || !nombre.touched,
+            'border-red-500 ring-red-500': nombre.invalid && (nombre.touched || form.submitted)
+          }" />
         <p *ngIf="nombre.invalid && (nombre.touched || form.submitted)" class="text-xs text-red-600 mt-1">El nombre es obligatorio.</p>
+      </div>
+
+      <!-- Estado y Rol asignado -->
+      <div class="flex flex-col md:flex-row gap-4">
+        <!-- Estado oculto -->
+        <input type="hidden" name="estado_proyecto" [(ngModel)]="nuevoProyecto.estado_proyecto" value="activo" />
+
+        <!-- Estado visible -->
+        <div class="w-full">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado</label>
+          <input type="text" value="Activo" readonly
+            class="w-full px-4 py-2 rounded-md border bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-sm cursor-not-allowed" />
+        </div>
+
+        <!-- Rol asignado -->
+        <div class="w-full">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rol asignado</label>
+          <input type="text" value="Project Management Office (PMO)" readonly
+            class="w-full px-4 py-2 rounded-md border bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-sm cursor-not-allowed" />
+        </div>
+      </div>
+
+      <!-- Tags (no funcional aún) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tags</label>
+        <select class="w-full px-4 py-2 rounded-md border bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 shadow-sm cursor-not-allowed" disabled>
+          <option selected>Seleccionar (no funcional)</option>
+        </select>
       </div>
 
       <!-- Descripción -->
       <div>
-        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 mb-1">📝 Descripción</label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
         <textarea name="descripcion" [(ngModel)]="nuevoProyecto.descripcion" required rows="4" #descripcion="ngModel"
-                  class="w-full px-4 py-2 rounded-md border bg-white/90 dark:bg-gray-800/70 text-gray-900 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-                  [ngClass]="{
-                    'border-gray-300 dark:border-gray-600': !descripcion.invalid || !descripcion.touched,
-                    'border-red-500 ring-red-500': descripcion.invalid && (descripcion.touched || form.submitted)
-                  }"></textarea>
+          class="w-full px-4 py-2 rounded-md border bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          [ngClass]="{
+            'border-gray-300 dark:border-gray-600': !descripcion.invalid || !descripcion.touched,
+            'border-red-500 ring-red-500': descripcion.invalid && (descripcion.touched || form.submitted)
+          }"></textarea>
         <p *ngIf="descripcion.invalid && (descripcion.touched || form.submitted)" class="text-xs text-red-600 mt-1">La descripción es obligatoria.</p>
       </div>
 
-      <!-- Estado oculto -->
-      <input type="hidden" name="estado_proyecto" [(ngModel)]="nuevoProyecto.estado_proyecto" value="activo" />
-
-      <!-- Rol PMO fijo -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-300 mb-1">👤 Rol asignado</label>
-        <input type="text" value="Project Management Office (PMO)" readonly
-               class="w-full px-4 py-2 rounded-md border bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-sm cursor-not-allowed" />
+      <!-- Viewers -->
+      <div class="flex items-center space-x-2 pt-2">
+        <span class="text-sm text-gray-600 dark:text-gray-300">Viewers:</span>
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-gray-800" />
+        <img src="https://randomuser.me/api/portraits/women/44.jpg" class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-gray-800" />
+        <img src="https://randomuser.me/api/portraits/men/65.jpg" class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-gray-800" />
       </div>
 
       <!-- Botones -->
-      <div class="flex justify-end gap-3 pt-2">
-        <!-- Cancelar -->
+      <div class="flex justify-end gap-3 pt-4">
         <button type="button" (click)="cerrarModalCrearProyecto()"
-                class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition shadow-md font-medium">
+          class="px-5 py-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition shadow font-medium">
           Cancelar
         </button>
 
-        <!-- Crear -->
-        <button type="submit"
-                [disabled]="form.invalid || enviandoProyecto"
-                class="px-5 py-2 rounded-lg bg-indigo-600 text-white font-semibold flex items-center gap-2 hover:bg-indigo-700 hover:ring-2 hover:ring-indigo-400 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+        <!-- Botón Crear con spinner -->
+        <button type="submit" [disabled]="form.invalid || enviandoProyecto"
+          class="px-5 py-2 rounded-md bg-indigo-600 text-white font-semibold flex items-center gap-2 justify-center hover:bg-indigo-700 transition shadow disabled:opacity-50 disabled:cursor-not-allowed">
           <ng-container *ngIf="!enviandoProyecto; else cargando">
-            <span class="material-icons text-sm">check_circle</span>
-            Crear proyecto
+            Crear Proyecto
           </ng-container>
           <ng-template #cargando>
-            <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
             </svg>
-            <span class="ml-2">Enviando...</span>
+            <span class="ml-2">Creando...</span>
           </ng-template>
         </button>
+
       </div>
     </form>
   </div>

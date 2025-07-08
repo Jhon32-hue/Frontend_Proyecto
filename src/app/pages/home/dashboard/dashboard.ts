@@ -164,12 +164,13 @@ ngOnInit() {
   }
 
   enviarProyecto() {
-    this.enviandoProyecto = true;
-    this.mensajeExitoProyecto = false;
-    this.mensajeErrorProyecto = false;
+  this.enviandoProyecto = true;
+  this.mensajeExitoProyecto = false;
+  this.mensajeErrorProyecto = false;
 
-    this.projectService.createProject(this.nuevoProyecto).subscribe({
-      next: () => {
+  this.projectService.createProject(this.nuevoProyecto).subscribe({
+    next: () => {
+      setTimeout(() => {
         this.enviandoProyecto = false;
         this.mensajeExitoProyecto = true;
         this.sincronizacionService.notificarProyectoCreado();
@@ -177,16 +178,20 @@ ngOnInit() {
         setTimeout(() => {
           this.mensajeExitoProyecto = false;
           this.cerrarModalCrearProyecto();
-        }, 2000);
-      },
-      error: (err) => {
-        console.error('❌ Error al crear proyecto:', err);
-        this.mensajeErrorProyecto = true;
+        }, 4000); // Duración del toast de éxito
+      }, 2500); // Tiempo que dura el spinner
+    },
+    error: (err) => {
+      console.error('❌ Error al crear proyecto:', err);
+      setTimeout(() => {
         this.enviandoProyecto = false;
-        setTimeout(() => (this.mensajeErrorProyecto = false), 3000);
-      },
-    });
-  }
+        this.mensajeErrorProyecto = true;
+        setTimeout(() => this.mensajeErrorProyecto = false, 4000);
+      }, 2500);
+    }
+  });
+}
+
 
   /* ===== 🗑️ Eliminar proyecto ===== */
   abrirModalEliminarProyecto(): void {

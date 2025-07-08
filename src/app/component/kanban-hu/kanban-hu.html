@@ -1,6 +1,6 @@
 <!-- 🌐 Modal Seleccionar Proyecto -->
 <div *ngIf="!proyectoId" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-  <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-2xl max-w-lg w-full text-center border border-gray-200 dark:border-slate-700 animate-fade-in-up transition-all transform scale-100 hover:scale-[1.02]">
+  <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-2xl max-w-lg w-full text-center border border-gray-200 dark:border-slate-700 animate-fade-in-up">
     <div class="mb-4 flex justify-center">
       <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-600 flex items-center justify-center shadow-lg">
         <span class="material-icons text-white text-3xl">folder_open</span>
@@ -22,16 +22,42 @@
 </div>
 
 <!-- 📌 Kanban Board -->
-<div *ngIf="proyectoId" class="p-4 md:p-6">
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
-      Historias de Usuario del Proyecto {{ proyectoId }}
-    </h2>
-    <button (click)="abrirModalCrearHU()" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition">
-      + Nueva Historia
-    </button>
+<div *ngIf="proyectoId" class="p-4 md:p-6 space-y-6">
+  <!-- 🔝 Header estilo ClickUp -->
+  <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <!-- 🎯 Título y acciones -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-white whitespace-nowrap">
+        Proyecto #{{ proyectoId }}
+      </h2>
+      <div class="flex gap-8">
+        <button class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow transition">
+          + Tareas
+        </button>
+        <button (click)="abrirModalCrearHU()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow transition">
+          + Nueva Historia
+        </button>
+      </div>
+    </div>
+
+    <!-- 🔘 Tabs -->
+    <div class="flex flex-wrap justify-start md:justify-end gap-2 bg-white dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm w-full md:w-auto">
+      <button class="flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+        <span class="material-icons text-sm">dashboard</span> Board
+      </button>
+      <button class="flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+        <span class="material-icons text-sm">checklist</span> To-do
+      </button>
+      <button class="flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+        <span class="material-icons text-sm">table_chart</span> Table
+      </button>
+      <button class="flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+        <span class="material-icons text-sm">view_list</span> List
+      </button>
+    </div>
   </div>
 
+  <!-- 🗂️ Columnas del Kanban -->
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     <div
       *ngFor="let estado of estados"
@@ -39,34 +65,32 @@
       (drop)="onDrop($event, estado.valor)"
       (dragover)="onDragOver($event)"
     >
-      <!-- Header columna -->
-      <div class="bg-gray-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between rounded-t-2xl shadow-sm">
-        <h3 class="text-xs font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
-          {{ estado.label }}
-        </h3>
-        <span class="text-xs text-gray-400">
-          {{ historiasPorEstado(estado.valor).length }}
-        </span>
+      <div
+        class="px-4 py-3 border-b rounded-t-2xl shadow-sm flex items-center justify-between"
+        [ngClass]="{
+          'bg-gray-100 dark:bg-slate-800 text-indigo-600': estado.valor === 'por_hacer',
+          'bg-yellow-100 dark:bg-yellow-800 text-yellow-700 dark:text-yellow-300': estado.valor === 'en_proceso',
+          'bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300': estado.valor === 'cerrada'
+        }"
+      >
+        <h3 class="text-xs font-bold uppercase tracking-wide">{{ estado.label }}</h3>
+        <span class="text-xs text-gray-400">{{ historiasPorEstado(estado.valor).length }}</span>
       </div>
 
-      <!-- Historias de esta columna -->
       <div class="flex-1 px-5 py-4 space-y-4 overflow-y-auto max-h-[60vh] custom-scroll">
         <div
           *ngFor="let hu of historiasPorEstado(estado.valor)"
           draggable="true"
           (dragstart)="onDragStart($event, hu, estado.valor)"
+          (click)="abrirModalHU(hu)"
           class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-md hover:shadow-xl transform hover:scale-[1.03] transition-all duration-300 cursor-pointer"
         >
           <div class="flex justify-between items-start mb-2">
-            <h4 class="text-[13px] font-semibold text-gray-800 dark:text-white">
-              {{ hu.titulo }}
-            </h4>
+            <h4 class="text-[13px] font-semibold text-gray-800 dark:text-white">{{ hu.titulo }}</h4>
             <span class="text-[10px] text-gray-400 dark:text-gray-500 font-mono">#HU-{{ hu.id }}</span>
           </div>
 
-          <p class="text-xs text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">
-            {{ hu.descripcion }}
-          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">{{ hu.descripcion }}</p>
 
           <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2 overflow-hidden">
             <div
@@ -98,126 +122,265 @@
   </div>
 </div>
 
+<!-- ✅ TOAST GLOBAL LATERAL -->
+<div
+  *ngIf="toastGlobal.mensaje"
+  class="fixed bottom-6 right-6 z-[100] w-auto max-w-xs px-4 py-3 rounded-lg shadow-lg transition-all duration-500 animate-fade-in-up"
+  [ngClass]="{
+    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': toastGlobal.tipo === 'exito',
+    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': toastGlobal.tipo === 'error'
+  }"
+>
+  <div class="flex items-start gap-3">
+    <i
+      class="lucide"
+      [ngClass]="{
+        'lucide-check-circle text-green-500 dark:text-green-300': toastGlobal.tipo === 'exito',
+        'lucide-x-circle text-red-500 dark:text-red-300': toastGlobal.tipo === 'error'
+      }"
+    ></i>
+    <span class="text-sm leading-snug">{{ toastGlobal.mensaje }}</span>
+  </div>
+</div>
 
 
-<!-- 🆕 Modal Crear Historia - Estilo moderno tipo ClickUp -->
-<div *ngIf="modalCrearHU" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-  <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-2xl max-w-lg w-full border border-gray-200 dark:border-slate-700 animate-fade-in">
-
-    <!-- Título del modal -->
-    <h3 class="text-2xl font-semibold mb-6 text-gray-900 dark:text-white flex items-center gap-2">
-      ✏️ Crear Nueva Historia
-    </h3>
-
-    <!-- Formulario de creación -->
-    <form (ngSubmit)="crearHistoria()" #formHU="ngForm" class="space-y-4">
-
-      <!-- Campo: Título -->
+<!-- 📌 MODAL CREAR HISTORIA DE USUARIO -->
+<div *ngIf="modalCrearHU" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+  <div
+    class="w-full max-w-2xl max-h-[95vh] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden animate-fade-in scale-95 transition-all duration-300 flex flex-col"
+  >
+    <!-- 🔝 HEADER -->
+    <div class="flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-slate-700">
       <div>
-        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Título</label>
+        <div class="flex items-center gap-3">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <i class="lucide lucide-box w-5 h-5 text-indigo-600 dark:text-indigo-400"></i>
+            Nueva Historia de Usuario
+          </h2>
+          <span class="flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-200 shadow-sm">
+            <i class="lucide lucide-clock w-3.5 h-3.5"></i> Por hacer
+          </span>
+        </div>
+        <p class="text-md text-gray-500 dark:text-gray-400 mt-1">Define tareas concretas y medibles para tu equipo</p>
+      </div>
+      <button (click)="cerrarModalCrearHU()" class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition">
+        <i class="lucide lucide-x w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- 🔔 TOAST -->
+    <div *ngIf="toastModal.mensaje" class="mx-6 mt-4">
+      <div
+        [ngClass]="{
+          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': toastModal.tipo === 'exito',
+          'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': toastModal.tipo === 'error'
+        }"
+        class="rounded-md px-4 py-2 text-sm shadow-md transition-all duration-300"
+      >
+        {{ toastModal.mensaje }}
+      </div>
+    </div>
+
+    <!-- 🧾 FORMULARIO -->
+    <form id="formHU" (ngSubmit)="crearHistoria()" #formHU="ngForm" class="px-6 py-6 overflow-y-auto space-y-8 max-h-[75vh]">
+      <!-- 🧱 DETALLES -->
+      <div class="space-y-3">
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Título</label>
         <input
           type="text"
           [(ngModel)]="nuevaHU.titulo"
           name="titulo"
           required
-          placeholder="Título de la historia"
-          class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+          placeholder="Ej: Registro de nuevos usuarios"
+          class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
         />
-      </div>
 
-      <!-- Campo: Descripción -->
-      <div>
-        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Descripción</label>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mt-4">Descripción</label>
         <textarea
           [(ngModel)]="nuevaHU.descripcion"
           name="descripcion"
           required
-          placeholder="Descripción detallada"
           rows="3"
-          class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+          placeholder="Describe el objetivo y contexto..."
+          class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm resize-none focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
         ></textarea>
       </div>
 
-      <!-- Campo: Estado -->
-      <div>
-        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Estado inicial</label>
-        <select
-          [(ngModel)]="nuevaHU.estado"
-          name="estado"
-          required
-          class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-        >
-          <option *ngFor="let estado of estados" [value]="estado.valor">
-            {{ estado.label }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Campos: Puntos y Tiempo Estimado -->
-      <div class="grid grid-cols-2 gap-4">
+      <!-- ⚙️ ESPECIFICACIONES -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Estado -->
         <div>
-          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Puntos de historia</label>
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Estado</label>
+          <select
+            [(ngModel)]="nuevaHU.estado"
+            name="estado"
+            required
+            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+          >
+            <option *ngFor="let estado of estados" [value]="estado.valor">{{ estado.label }}</option>
+          </select>
+        </div>
+
+        <!-- Puntos -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Puntos</label>
           <input
             type="number"
+            min="1"
             [(ngModel)]="nuevaHU.puntos_historia"
             name="puntos_historia"
             required
-            min="1"
-            placeholder="Ej: 3"
-            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
           />
         </div>
 
+        <!-- Tiempo -->
         <div>
-          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Tiempo estimado (h)</label>
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Tiempo estimado (h)</label>
           <input
             type="number"
+            min="1"
             [(ngModel)]="nuevaHU.tiempo_estimado_horas"
             name="tiempo_estimado_horas"
             required
-            min="1"
-            placeholder="Ej: 8"
-            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
           />
         </div>
       </div>
 
-      <!-- Campo: Asignar Developer -->
+      <!-- 👤 ASIGNACIÓN -->
       <div>
-        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Asignar a</label>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Asignar a</label>
         <select
           [(ngModel)]="nuevaHU.participacion_asignada"
           name="asignado_a"
           required
-          class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+          class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
         >
           <option [ngValue]="null" disabled>Selecciona un developer</option>
           <option *ngIf="developers.length === 0" disabled>No hay developers disponibles</option>
-
-          <!-- 🔗 Usamos dev.participacion_id porque así espera el backend -->
           <option *ngFor="let dev of developers" [ngValue]="dev.participacion_id">
             {{ dev.nombre }} ({{ dev.rol }})
           </option>
         </select>
       </div>
 
-      <!-- Botones de acción -->
-      <div class="flex justify-end gap-2 pt-4">
-        <button
-          type="button"
-          (click)="cerrarModalCrearHU()"
-          class="px-4 py-2 rounded-lg text-sm bg-gray-500 text-white hover:bg-gray-600 transition shadow"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          [disabled]="!formHU.valid"
-          class="px-4 py-2 rounded-lg text-sm bg-indigo-600 text-white hover:bg-indigo-700 transition shadow"
-        >
-          Crear
-        </button>
+      <!-- 📎 ARCHIVO -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Adjuntar archivo</label>
+        <input
+          type="file"
+          name="archivo"
+          class="block w-full text-sm file:px-4 file:py-2 file:rounded-md file:border-0 file:bg-indigo-600 file:text-white file:cursor-pointer"
+        />
+      </div>
+
+      <!-- 💬 COMENTARIO -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Comentario</label>
+        <div class="flex gap-2 items-center">
+          <input
+            type="text"
+            placeholder="Escribe un comentario..."
+            class="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+          <button
+            type="button"
+            class="flex items-center justify-center px-3 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition-all text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            title="Enviar comentario"
+          >
+            <i class="lucide lucide-send w-4 h-4"></i>
+          </button>
+        </div>
       </div>
     </form>
+
+    <!-- ✅ BOTONES -->
+    <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+      <button
+        type="button"
+        (click)="cerrarModalCrearHU()"
+        class="px-4 py-2 text-sm rounded-md bg-white dark:bg-slate-700 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-600 transition"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        form="formHU"
+        [disabled]="!formHU.valid"
+        class="px-4 py-2 text-sm rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition-all shadow-md disabled:opacity-50"
+      >
+        Crear historia
+      </button>
+    </div>
+  </div>
+</div>
+
+ <!-- ⚡ MODAL DETALLE DE HISTORIA DE USUARIO -->
+<div *ngIf="showModalHU && selectedHU" class="fixed inset-0 bg-black/60 z-[9999] backdrop-blur-sm flex items-center justify-center px-2 py-4">
+
+
+  <div class="bg-gray-100 dark:bg-[#1f1f2b] w-full max-w-4xl max-h-[95vh] overflow-y-auto rounded-2xl shadow-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 animate-fade-in-up">
+    <!-- Cabecera -->
+    <div class="flex justify-between items-start sm:items-center gap-4 mb-5">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200 font-medium">#HU-{{ selectedHU.id }}</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 font-medium">{{ selectedHU.estado | titlecase }}</span>
+        </div>
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white leading-snug">{{ selectedHU.titulo }}</h2>
+      </div>
+      <div class="flex gap-2">
+        <button (click)="cerrarModalHU()" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <i class="ri-close-line mr-1"></i> Cerrar
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenido -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Panel principal -->
+      <div class="md:col-span-2 space-y-6">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Descripción</h3>
+          <p class="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-line">{{ selectedHU.descripcion || 'Sin descripción' }}</p>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Resumen</h3>
+          <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+            <li><strong>Puntos:</strong> {{ selectedHU.puntos_historia }}</li>
+            <li><strong>Tiempo estimado:</strong> {{ selectedHU.tiempo_estimado_horas }} horas</li>
+            <li><strong>Asignado a:</strong> {{ selectedHU.participacion_asignada || 'No asignado' }}</li>
+          </ul>
+        </div>
+
+        <!-- Historial -->
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Historial</h3>
+          <div class="text-sm italic text-gray-600 dark:text-gray-400 space-y-1 max-h-32 overflow-y-auto pr-1">
+            <p *ngFor="let h of actividadHistoria">
+              {{ h.fecha_hora | date:'short' }} — {{ h.accion_realizada }}
+            </p>
+            <p *ngIf="actividadHistoria.length === 0">Sin historial disponible.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel lateral -->
+      <div class="space-y-6 bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow">
+        <div>
+          <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Estado</p>
+          <span class="inline-block px-3 py-1 rounded-md text-sm font-semibold bg-indigo-100 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200">
+            {{ selectedHU.estado | titlecase }}
+          </span>
+        </div>
+
+        <div>
+          <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">ID Historia</p>
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-100">#HU-{{ selectedHU.id }}</span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

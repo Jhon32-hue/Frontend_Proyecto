@@ -153,21 +153,80 @@ export class KanbanBoard implements OnInit {
 
   this.botonInvitarCargando = true;
 
-  this.invitarService.invitarColaborador(invitacion).subscribe({
-    next: () => {
-      this.mostrarToast('✅ Colaborador invitado con éxito.', 'success');
-      this.botonInvitarCargando = false;
-      this.cdr.detectChanges(); // fuerza actualización del toast
-      this.cerrarModalInvitar();
-    },
-    error: (err) => {
-      console.error('❌ Error al invitar colaborador:', err);
-      this.mostrarToast('❌ Error al invitar al colaborador.', 'error');
-      this.botonInvitarCargando = false;
-    },
-  });
+this.invitarService.invitarColaborador(invitacion).subscribe({
+  next: (response) => {
+    const mensaje = response?.mensaje || '✅ Colaborador invitado con éxito.';
+    this.mostrarToast(mensaje, 'success');
+    this.botonInvitarCargando = false;
+    this.cerrarModalInvitar();
+  },
+  error: (err) => {
+  console.error('❌ Error recibido del backend:', err);
+
+  // Verifica si err.error es un string o un objeto
+  let mensajeExtraido: string;
+
+  if (typeof err?.error === 'string') {
+    mensajeExtraido = err.error;
+  } else if (typeof err?.error?.mensaje === 'string') {
+    mensajeExtraido = err.error.mensaje;
+  } else if (typeof err?.error?.detail === 'string') {
+    mensajeExtraido = err.error.detail;
+  } else if (typeof err?.error?.error === 'string') {
+    mensajeExtraido = err.error.error;
+  } else if (typeof err?.message === 'string') {
+    mensajeExtraido = err.message;
+  } else {
+    mensajeExtraido = '❌ Ocurrió un error inesperado.';
+  }
+
+  const mensajeFinal = this.mapearMensajeError({ error: mensajeExtraido });
+  this.mostrarToast(mensajeFinal, 'error');
+  this.botonInvitarCargando = false;
 }
 
+
+});
+
+}
+
+private mapearMensajeError(error: any): string {
+  let mensaje: string = '';
+
+  // Detectar string directo o extraer desde objetos
+  if (typeof error?.error === 'string') {
+    mensaje = error.error;
+  } else if (typeof error?.error?.mensaje === 'string') {
+    mensaje = error.error.mensaje;
+  } else if (typeof error?.error?.detail === 'string') {
+    mensaje = error.error.detail;
+  } else if (typeof error?.error?.email?.[0] === 'string') {
+    mensaje = error.error.email[0];
+  } else if (typeof error?.message === 'string') {
+    mensaje = error.message;
+  } else {
+    mensaje = '❌ Error inesperado. Intenta de nuevo.';
+  }
+
+  // Mapeo personalizado
+  if (mensaje.includes('PMO ya existe') || mensaje.includes('project_management')) {
+    return ' Lo sentimos, este proyecto ya tiene un Project Manager asignado.';
+  }
+
+  if (mensaje.includes('Scrum Master ya existe')) {
+    return ' Lo sentimos, este proyecto ya cuenta con un Scrum Master.';
+  }
+
+  if (mensaje.includes('Usuario ya participa') || mensaje.includes('ya es miembro')) {
+    return '⚠️ Esta persona ya está participando en este proyecto.';
+  }
+
+  if (mensaje.includes('Rol inválido') || mensaje.includes('rol no válido')) {
+    return '🚫 El rol seleccionado no es válido para este proyecto.';
+  }
+
+  return mensaje;
+}
 
 private cargarListaProyectos(): void {
   const usuario = this.authService.getUsuarioActual();

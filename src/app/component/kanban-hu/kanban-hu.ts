@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalService } from '../../services/Modal/modal-service';
 import { DevloperService } from '../../services/developers_proyectos/developer-service';
+import { ActividadUsuario } from '../../interfaces/home';
+import { DashboardServices } from '../../services/Home/dashboard';
 
 interface Developer {
   participacion_id: number;
@@ -34,7 +36,12 @@ export class KanbanHu implements OnInit, OnChanges {
   modalCrearHU = false;
   modalSeleccionProyecto = false;
 
+  showModalHU: boolean = false;
+  selectedHU: HistoriaUsuario | null = null;
+
   developers: Developer[] = [];
+
+  actividadHistoria: ActividadUsuario[] = [];
 
   nuevaHU: Partial<HistoriaUsuario> = {
     titulo: '',
@@ -45,12 +52,24 @@ export class KanbanHu implements OnInit, OnChanges {
     estado: 'por_hacer'
   };
 
+  toastGlobal = {
+    mensaje: '',
+    tipo: '' as 'exito' | 'error' | ''
+  };
+
+  toastModal = {
+    mensaje: '',
+    tipo: '' as 'exito' | 'error' | ''
+  };
+
+   
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private huService: HistoriaUsuarioService,
     private modalService: ModalService,
-    private developerService: DevloperService
+    private developerService: DevloperService,
+    private dashboardService: DashboardServices
   ) {}
 
   ngOnInit(): void {
@@ -115,6 +134,7 @@ export class KanbanHu implements OnInit, OnChanges {
   }
 
   abrirModalCrearHU(): void {
+    this.showModalHU = false;
     this.modalCrearHU = true;
   }
 
@@ -132,6 +152,7 @@ export class KanbanHu implements OnInit, OnChanges {
 
   crearHistoria(): void {
     if (!this.proyectoId || !this.nuevaHU.titulo || !this.nuevaHU.descripcion) {
+      this.mostrarToastModal('Completa todos los campos obligatorios.', 'error');
       return;
     }
 
@@ -146,13 +167,16 @@ export class KanbanHu implements OnInit, OnChanges {
     this.huService.create(payload).subscribe({
       next: (res) => {
         this.historias.push(res);
-        this.cerrarModalCrearHU();
+        this.mostrarToastModal('✅ Historia creada exitosamente.', 'exito');
+        setTimeout(() => this.cerrarModalCrearHU(), 1200);
       },
-      error: (err) => console.error('❌ Error al crear historia:', err)
+      error: (err) => {
+        console.error('❌ Error al crear historia:', err);
+        this.mostrarToastModal('Solo un Scrum Master puede crear historias de usuario para este proyecto', 'error');
+      }
     });
   }
 
-  // ✅ DRAG AND DROP NATIVO
   onDragStart(event: DragEvent, hu: HistoriaUsuario, columnaOrigen: EstadoHu): void {
     const payload = { hu: { id: hu.id }, columnaOrigen };
     event.dataTransfer?.setData('text/plain', JSON.stringify(payload));
@@ -180,10 +204,14 @@ export class KanbanHu implements OnInit, OnChanges {
     this.huService.update(historia.id, { ...historia, estado: nuevoEstado }).subscribe({
       next: () => {
         this.historias = [...this.historias];
+
+        const label = this.estados.find(e => e.valor === nuevoEstado)?.label || 'actualizado';
+        this.mostrarToastGlobal(`📦 Historia movida a "${label}"`, 'exito');
       },
       error: (err) => {
         historia.estado = estadoAnterior;
         console.error('❌ Error al mover historia:', err);
+        this.mostrarToastGlobal('Ocurrió un error al cambiar de estado.', 'error');
       }
     });
   }
@@ -207,5 +235,46 @@ export class KanbanHu implements OnInit, OnChanges {
 
   irADashboard(): void {
     this.router.navigate(['/dashboard']);
+  }
+
+  mostrarToastGlobal(mensaje: string, tipo: 'exito' | 'error') {
+    this.toastGlobal.mensaje = mensaje;
+    this.toastGlobal.tipo = tipo;
+    setTimeout(() => {
+      this.toastGlobal.mensaje = '';
+      this.toastGlobal.tipo = '';
+    }, 3500);
+  }
+
+  mostrarToastModal(mensaje: string, tipo: 'exito' | 'error') {
+    this.toastModal.mensaje = mensaje;
+    this.toastModal.tipo = tipo;
+    setTimeout(() => {
+      this.toastModal.mensaje = '';
+      this.toastModal.tipo = '';
+    }, 3500);
+  }
+
+  abrirModalHU(historia: HistoriaUsuario): void {
+    console.log('🟦 Click en card. Historia:', historia);
+    this.selectedHU = historia;
+    this.modalCrearHU = false;
+    this.showModalHU = true;
+
+    this.dashboardService.getActividadUsuario().subscribe({
+      next: (res) => {
+        this.actividadHistoria = res.filter(a => a.historia_usuario === historia.id);
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar historial de historia:', err);
+        this.actividadHistoria = [];
+      }
+    });
+  }
+
+  cerrarModalHU(): void {
+    this.selectedHU = null;
+    this.showModalHU = false;
+    this.actividadHistoria = [];
   }
 }

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProjectCreate } from '../../pages/projects/project-create/project-create';
 import { DeleteProject } from '../../interfaces/projects';
+import { ProyectoResumen } from '../../interfaces/home';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,11 @@ export class ProjectService {
     const url = `${this.apiUrl}gestion/${id}/`;
     return this.http.delete(url);
   }
+
+  getProyectosResumen(): Observable<ProyectoResumen[]> {
+  const url = this.apiUrl + 'gestion/estadisticas/';
+  return this.http.get<ProyectoResumen[]>(url);
+}
 
 
 }
