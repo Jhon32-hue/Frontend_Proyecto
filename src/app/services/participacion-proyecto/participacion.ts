@@ -26,4 +26,10 @@ export class ParticipacionService {
     map(response => response.roles)
   );
 }
+
+  editarParticipacion(id: number, data: Partial<ParticipacionProyecto>): Observable<ParticipacionProyecto> {
+    const url = `http://127.0.0.1:8000/api/proyectos/participaciones/${id}/`;
+    return this.http.patch<ParticipacionProyecto>(url, data);
+  }
+
 }

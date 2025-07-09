@@ -19,7 +19,7 @@ export class ResumenProyectosComponent implements OnInit, OnDestroy {
   public loading = true;
   public proyectos: ProyectoResumen[] = [];
 
-  public userId = 1; // ⚠️ Sustituir por el ID real del usuario autenticado
+  public userId = 1; 
 
   modalAbierto = false;
   modalEliminar = false;
@@ -84,7 +84,7 @@ export class ResumenProyectosComponent implements OnInit, OnDestroy {
 
   /*  Navegación  */
   verTodosProyectos() {
-    sessionStorage.setItem('fromValidNavigation', 'true'); // 🔑 agrega esta línea
+    sessionStorage.setItem('fromValidNavigation', 'true'); 
     this.router.navigate(['/project_list']);
   }
 

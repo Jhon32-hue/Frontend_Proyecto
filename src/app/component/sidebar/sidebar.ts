@@ -104,7 +104,7 @@ export class Sidebar implements OnInit, OnDestroy {
       section: 'Colaboradores',
       items: [
         { icon: 'group', label: 'Usuarios', link: '/colaboradores' },
-        { icon: 'person', label: 'Perfil', link: '/perfil' }
+        { icon: 'person', label: 'Perfil', link: '/user-profile' }
       ]
     },
     {

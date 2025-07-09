@@ -8,6 +8,15 @@ export interface User {
   user_id: number;
   email: string;
   nombre_completo: string;
+
+  // Campos opcionales desde tu backend
+  telefono?: string;
+  bio?: string;
+  pais?: string;
+  estado?: string;
+  codigo_postal?: string;
+  tax_id?: string;
+  avatar?: string; // URL de imagen de perfil
 }
 
 // Esta es la respuesta que se recibe al registrar

@@ -25,6 +25,8 @@ export class ProjectList implements OnInit {
   isSidebarOpen = true;
   screenSize: 'sm' | 'md' | 'lg' = 'lg';  // default para desktop
 
+  
+
   /* ========== 💡 Datos de Proyectos y HUs ========== */
   proyectos: ProyectoResumen[] = []; // debes cargar esto según tu lógica
   historiasPorProyecto: { [proyectoId: number]: HistoriaUsuario[] } = {};

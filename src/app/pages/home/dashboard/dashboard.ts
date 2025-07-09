@@ -38,6 +38,8 @@ export class Dashboard implements OnInit {
   isSidebarOpen = true;
   screenSize: ScreenSize = 'lg';
   nombreCompleto = 'Usuario';
+  usuarioActual: { user_id: number; email: string; nombre_completo: string } | null = null;
+
 
   isDarkMode = false;
 
@@ -97,8 +99,8 @@ export class Dashboard implements OnInit {
 
   /* ===== 🔄 Ciclo de vida ===== */
 ngOnInit() {
-  const nombre = localStorage.getItem('nombre_completo');
-  if (nombre) this.nombreCompleto = nombre;
+  this.usuarioActual = this.authServicies.getUsuarioActual();
+
 
   this.setScreenSize(window.innerWidth);
   this.isSidebarOpen = this.screenSize === 'lg';

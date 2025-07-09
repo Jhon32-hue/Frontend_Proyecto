@@ -47,7 +47,8 @@
   </div>
 
   <!-- Contenido scrollable del sidebar -->
-  <div class="relative z-10 h-full flex flex-col justify-between overflow-y-auto px-3 py-4 font-sans transition-colors">
+ <div class="relative z-10 h-full flex flex-col justify-between overflow-visible px-3 py-4
+ font-sans transition-colors">
 
     <!-- Menú principal -->
     <div class="flex items-center gap-2 px-2 mb-3">
@@ -56,64 +57,97 @@
       <div class="flex-1 border-t border-gray-300 dark:border-white/15"></div>
     </div>
 
-    <ul class="space-y-1 text-sm font-medium">
-      <ng-container *ngFor="let group of visibleMenuGroups.slice(0, 7)">
-        <li>
-          <button (click)="toggleGroup(group.section)"
-            class="w-full flex items-center gap-3 rounded-xl px-3 py-2 group relative transition-all duration-200 cursor-pointer"
+<!-- UL principal -->
+<ul class="space-y-1 text-sm font-medium">
+  <ng-container *ngFor="let group of visibleMenuGroups.slice(0, 7)">
+    <li>
+      <button (click)="toggleGroup(group.section)"
+        class="w-full flex items-center gap-3 rounded-xl px-3 py-2 group relative transition-all duration-200 cursor-pointer"
+        [ngClass]="darkMode
+          ? 'text-white bg-[#1a1b2e] hover:bg-[#1E293B] hover:ring-1 hover:ring-indigo-500/40'
+          : 'text-gray-800 bg-white hover:bg-indigo-50 hover:ring-1 hover:ring-indigo-300 hover:text-indigo-700'">
+        
+        <!-- Ícono con tooltip funcional -->
+        <span class="relative group">
+          <span class="material-icons text-[20px] p-1 rounded-md transition-all duration-200"
             [ngClass]="darkMode
-              ? 'text-white bg-[#1a1b2e] hover:bg-[#1E293B] hover:ring-1 hover:ring-indigo-500/40'
-              : 'text-gray-800 bg-white hover:bg-indigo-50 hover:ring-1 hover:ring-indigo-300 hover:text-indigo-700'">
-            <span class="material-icons text-[20px] p-1 rounded-md transition-all duration-200 relative"
-              [ngClass]="darkMode
-                ? 'bg-indigo-600/20 text-indigo-300 group-hover:bg-indigo-500 group-hover:text-white shadow-sm'
-                : 'bg-indigo-100 text-black group-hover:bg-indigo-500 group-hover:text-white'">
-              {{ getGroupIcon(group) }}
+              ? 'bg-indigo-600/20 text-indigo-300 group-hover:bg-indigo-500 group-hover:text-white shadow-sm'
+              : 'bg-indigo-100 text-black group-hover:bg-indigo-500 group-hover:text-white'">
+            {{ getGroupIcon(group) }}
+          </span>
+
+          <!-- Tooltip cuando sidebar está cerrado -->
+          <span *ngIf="!isOpen"
+            class="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 text-xs whitespace-nowrap rounded bg-gray-900 text-white shadow z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            {{ group.section }}
+          </span>
+        </span>
+
+        <!-- Texto visible solo si sidebar está abierto -->
+        <span *ngIf="isOpen" class="flex-1 font-semibold">{{ group.section }}</span>
+
+        <!-- Flecha solo cuando está abierto -->
+        <span *ngIf="isOpen" class="material-icons text-sm text-gray-400 transform transition-transform duration-300"
+              [ngClass]="{ 'rotate-180': isGroupOpen(group.section) }">expand_more</span>
+      </button>
+
+      <!-- Subitems -->
+      <ul *ngIf="isGroupOpen(group.section)" [ngClass]="{ 'pl-8': isOpen, 'pl-1': !isOpen }" class="space-y-0.5">
+        <li *ngFor="let item of group.items">
+
+          <!-- Botón especial para Kanban_HU -->
+          <button *ngIf="item.label === 'Kanban_HU'" (click)="abrirKanbanHU()"
+            class="relative group flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 w-full text-left"
+            [ngClass]="darkMode
+              ? 'text-white/70 hover:bg-[#1C2A3A] hover:text-white hover:ring-1 hover:ring-indigo-400/20'
+              : 'text-gray-800 hover:bg-indigo-50 hover:text-indigo-700'">
+
+            <!-- Ícono con tooltip funcional -->
+            <span class="relative group">
+              <span class="material-icons text-base"
+                    [ngClass]="darkMode ? 'text-white/70' : 'text-black'">
+                {{ item.icon }}
+              </span>
+
+              <!-- Tooltip -->
               <span *ngIf="!isOpen"
-                class="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                {{ group.section }}
+                class="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 text-xs whitespace-nowrap rounded bg-gray-900 text-white shadow z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {{ item.label }}
               </span>
             </span>
-            <span *ngIf="isOpen" class="flex-1 font-semibold">{{ group.section }}</span>
-            <span *ngIf="isOpen" class="material-icons text-sm text-gray-400 transform transition-transform duration-300"
-                  [ngClass]="{ 'rotate-180': isGroupOpen(group.section) }">expand_more</span>
+
+            <span *ngIf="isOpen">{{ item.label }}</span>
           </button>
 
+          <!-- Otros ítems normales -->
+          <a *ngIf="item.label !== 'Kanban_HU'" [routerLink]="item.link" routerLinkActive="active-link"
+            class="relative group flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200"
+            [ngClass]="darkMode
+              ? 'text-white/70 hover:bg-[#1C2A3A] hover:text-white hover:ring-1 hover:ring-indigo-400/20'
+              : 'text-gray-800 hover:bg-indigo-50 hover:text-indigo-700'">
 
-        <ul *ngIf="isGroupOpen(group.section)" [ngClass]="{ 'pl-8': isOpen, 'pl-1': !isOpen }" class="space-y-0.5">
-
-          <li *ngFor="let item of group.items">
-
-            <!-- ✅ Botón especial solo para Kanban_HU -->
-            <button *ngIf="item.label === 'Kanban_HU'" (click)="abrirKanbanHU() "
-              class="cursor-pointer relative group flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 w-full text-left"
-              [ngClass]="darkMode
-                ? 'text-white/70 hover:bg-[#1C2A3A] hover:text-white hover:ring-1 hover:ring-indigo-400/20'
-                : 'text-gray-800 hover:bg-indigo-50 hover:text-indigo-700'">
-              <span class="material-icons text-base" [ngClass]="darkMode ? 'text-white/70' : 'text-black'">
+            <!-- Ícono con tooltip -->
+            <span class="relative group">
+              <span class="material-icons text-base"
+                    [ngClass]="darkMode ? 'text-white/70' : 'text-black'">
                 {{ item.icon }}
               </span>
-              <span *ngIf="isOpen">{{ item.label }}</span>
-            </button>
 
-            <!-- ✅ Enlaces normales para los demás -->
-            <a *ngIf="item.label !== 'Kanban_HU'" [routerLink]="item.link" routerLinkActive="active-link"
-              class=" cursor-pointer relative group flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200"
-              [ngClass]="darkMode
-                ? 'text-white/70 hover:bg-[#1C2A3A] hover:text-white hover:ring-1 hover:ring-indigo-400/20'
-                : 'text-gray-800 hover:bg-indigo-50 hover:text-indigo-700'">
-              <span class="material-icons text-base" [ngClass]="darkMode ? 'text-white/70' : 'text-black'">
-                {{ item.icon }}
+              <span *ngIf="!isOpen"
+                class="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 text-xs whitespace-nowrap rounded bg-gray-900 text-white shadow z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {{ item.label }}
               </span>
-              <span *ngIf="isOpen">{{ item.label }}</span>
-            </a>
+            </span>
 
-          </li>
+            <span *ngIf="isOpen">{{ item.label }}</span>
+          </a>
 
-        </ul>
-      </li>
-    </ng-container>
-  </ul>
+        </li>
+      </ul>
+    </li>
+  </ng-container>
+</ul>
+
 
 
     <!-- Separador otros -->

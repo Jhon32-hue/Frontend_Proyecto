@@ -139,6 +139,14 @@ export class KanbanBoard implements OnInit {
     this.toastMensaje = '';
   }
 
+obtenerNombreRol(idRol?: number): string {
+  if (idRol == null) return 'Desconocido';
+  const rol = this.rolesDisponibles.find(r => r.id_rol === idRol);
+  return rol ? `${rol.nombre} (id: ${rol.id_rol})` : 'Desconocido';
+}
+
+
+
   invitarColaborador(): void {
   if (!this.email || !this.proyectoSeleccionado || !this.rolSeleccionado) {
     this.mostrarToast('❌ Todos los campos son obligatorios.', 'error');
@@ -293,8 +301,56 @@ private cargarRolesDisponibles(): void {
   });
 }
 
+private cargarRolesDisponiblesEdición(paraEdicion: boolean = false): void {
+  this.participacionService.getRoles().subscribe({
+    next: (roles) => {
+      let filtrados = paraEdicion
+        ? roles.filter(
+            (rol) => rol.clave === 'developer' || rol.clave === 'scrum_master'
+          )
+        : roles;
 
+      // 👇 Asegúrate de incluir el rol actual aunque no sea editable
+      if (this.participacionSeleccionada?.id_rol) {
+        const actual = roles.find(
+          r => r.id_rol === this.participacionSeleccionada?.id_rol?.id_rol
+        );
+        if (actual && !filtrados.some(r => r.id_rol === actual.id_rol)) {
+          filtrados = [actual, ...filtrados];
+        }
+      }
 
+      this.rolesDisponibles = filtrados;
+    },
+    error: (err) => console.error('Error al cargar roles (edición):', err),
+  });
+}
+
+private mapearErrorParticipacion(error: any): string {
+  let mensaje = '';
+
+  if (typeof error?.error === 'string') {
+    mensaje = error.error;
+  } else if (typeof error?.error?.mensaje === 'string') {
+    mensaje = error.error.mensaje;
+  } else if (typeof error?.error?.detail === 'string') {
+    mensaje = error.error.detail;
+  } else if (typeof error?.message === 'string') {
+    mensaje = error.message;
+  } else {
+    mensaje = '❌ Error inesperado al actualizar la participación.';
+  }
+
+  // Mapeos específicos opcionales:
+  if (mensaje.includes('rol no permitido')) {
+    return '⚠️ No tienes permiso para asignar ese rol.';
+  }
+  if (mensaje.includes('inactivo')) {
+    return 'ℹ️ El usuario ya está inactivo en este proyecto.';
+  }
+
+  return mensaje;
+}
 
   private cargarProyectosKanban(): void {
     this.dashboardService.getResumenProyectos().subscribe({
@@ -586,6 +642,50 @@ private cargarRolesDisponibles(): void {
       this.router.navigate(['/historia-usuario', task.id, 'hu']);
     }
   }
+
+  mostrarModalEdicion = false;
+  participacionSeleccionada: ParticipacionProyecto | null = null;
+
+
+
+cerrarModalEdicion() {
+  this.mostrarModalEdicion = false;
+  this.participacionSeleccionada = null;
+}
+
+abrirModalEdicion(participacion: ParticipacionProyecto): void {
+  this.participacionSeleccionada = { ...participacion };
+  this.mostrarModalEdicion = true;
+  this.cargarRolesDisponiblesEdición(true); 
+}
+
+
+
+guardarCambiosParticipacion(): void {
+  if (!this.participacionSeleccionada) return;
+
+  const data = {
+    id_rol: this.participacionSeleccionada.id_rol,
+    estado_participacion: this.participacionSeleccionada.estado_participacion
+  };
+
+  this.participacionService.editarParticipacion(this.participacionSeleccionada.id_participacion, data)
+    .subscribe({
+      next: (resp) => {
+        this.mostrarToast('✅ Participación actualizada correctamente.', 'success');
+        this.cerrarModalEdicion();
+        if (this.selectedProyecto) {
+          this.cargarParticipantesProyecto(this.selectedProyecto.id);
+        }
+      },
+      error: (err) => {
+        const mensaje = this.mapearErrorParticipacion(err);
+        this.mostrarToast(mensaje, 'error');
+        console.error('❌ Error actualizando participación:', err);
+      }
+    });
+}
+
 
 
 

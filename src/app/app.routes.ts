@@ -10,6 +10,7 @@ import { HistoriaUsuario } from './pages/historia-usuario/historia-usuario';
 import { KanbanHu } from './component/kanban-hu/kanban-hu';
 import { VerifyAccount } from './pages/auth/verify-account/verify-account';
 import { TaskList } from './pages/tasks/task-list/task-list';
+import { UserProfile } from './pages/users/user-profile/user-profile';
 
 export const routes: Routes = [
   {
@@ -46,10 +47,16 @@ export const routes: Routes = [
 {
   path: 'verify-account',
   component: VerifyAccount,
+  canActivate: [guestGuard]
 },
 {
    path: 'task-list',
   component: TaskList,
+},
+{
+  path: 'user-profile',
+  component: UserProfile,
+  canActivate: [strictProjectGuard]
 }
 
 ];
